@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "SafeLocker",
+    "slug": "safelocker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/safelockers.png",
+    "userInterfaceStyle": "light",
+    "scheme": "safelocker",
+    "splash": {
+      "image": "./assets/safelockers.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#121212"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sheikhtaj.safelocker"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/safelockers.png",
+        "backgroundColor": "#121212"
+      },
+      "package": "com.sheikhtaj.safelocker"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4f4f6b00-5e25-46eb-9397-c36bee889a1c"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
