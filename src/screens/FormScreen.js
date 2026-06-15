@@ -12,7 +12,6 @@ import * as Clipboard from 'expo-clipboard';
 import { BlurView } from 'expo-blur';
 import CryptoJS from 'crypto-js';
 
-// 🚀 Secure Random Fallback for React Native
 if (!CryptoJS.lib.WordArray.random_polyfilled) {
   CryptoJS.lib.WordArray.random = function (nBytes) {
     const words = [];
@@ -22,14 +21,14 @@ if (!CryptoJS.lib.WordArray.random_polyfilled) {
   CryptoJS.lib.WordArray.random_polyfilled = true;
 }
 
-import { getVaultData, saveVaultData, logActivity } from '../utils/storage';
+// 🔥 GET CUSTOM TYPES IMPORT KIYA
+import { getVaultData, saveVaultData, logActivity, getCustomTypes } from '../utils/storage';
 import { ThemeContext } from '../ThemeContext';
 
 const BP_COLORS = {
   primary: '#6C5CE7', primaryGradient: ['#6C5CE7', '#8B7CFF'], disabledBtn: '#D1D5DB', textMain: '#1A1A1A', textSub: '#8A8A8A', inputBg: '#F7F8FC', inputBorder: '#E5E7EB'
 };
 
-// 🚀 STRICT NUMERICAL KEYBOARDS APPLIED
 const TYPE_SCHEMAS = {
   'Login': [
     { key: 'title', label: 'Title *', placeholder: 'e.g. Google, Instagram', autoCapitalize: 'words' },
@@ -94,15 +93,13 @@ const SmartInput = ({ field, value, onChangeText, focusedField, setFocusedField,
   };
 
   const handleTextChange = (text) => {
-    if (field.key === 'ifsc') {
-       onChangeText(field.key, text.toUpperCase());
-    } 
+    if (field.key === 'ifsc') onChangeText(field.key, text.toUpperCase());
     else if (field.key === 'expiry') {
        let cleaned = text.replace(/[^0-9]/g, '');
        if (cleaned.length >= 3) { cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4); }
        onChangeText(field.key, cleaned);
     } 
-    else { onChangeText(field.key, text); }
+    else onChangeText(field.key, text);
   };
 
   return (
@@ -148,22 +145,37 @@ const SmartInput = ({ field, value, onChangeText, focusedField, setFocusedField,
 
 export default function FormScreen({ route, navigation }) {
   const { themeColors, isDark } = useContext(ThemeContext);
-  const { type = 'Login', editEntry = null, customFields: routeCustomFields = null } = route.params || {};
+  const { type = 'Login', editEntry = null } = route.params || {};
 
-  let schema = TYPE_SCHEMAS[type];
-  if (!schema) {
-    schema = [
-      { key: 'title', label: 'Title *', placeholder: `e.g. ${type} Account`, autoCapitalize: 'words' },
-      ...(routeCustomFields || []).map(cf => ({ key: cf.id, label: cf.label, placeholder: cf.placeholder }))
-    ];
-  }
-
+  const [schema, setSchema] = useState(TYPE_SCHEMAS[type] || []);
   const [formData, setFormData] = useState({});
   const [focusedField, setFocusedField] = useState(null);
   const [saveState, setSaveState] = useState('idle'); 
-
-  // 🔥 CUSTOM FIELDS STATE & LOGIC
   const [customFields, setCustomFields] = useState(editEntry?.customFields || []);
+
+  const successScale = useRef(new Animated.Value(0.5)).current;
+  const successOpacity = useRef(new Animated.Value(0)).current;
+
+  // 🔥 SMART FEATURE: Dynamic Schema Setup for Custom Formats in Edit Mode
+  useEffect(() => {
+    const fetchCustomSchema = async () => {
+      if (!TYPE_SCHEMAS[type]) {
+        const customTypes = await getCustomTypes();
+        const foundType = customTypes?.find(t => t.name === type);
+        if (foundType) {
+          const generatedSchema = [
+            { key: 'title', label: 'Title *', placeholder: `e.g. ${type} Account`, autoCapitalize: 'words' },
+            ...foundType.fields.map(f => ({ key: f.id, label: f.label, placeholder: f.placeholder }))
+          ];
+          setSchema(generatedSchema);
+        }
+      }
+    };
+    fetchCustomSchema();
+    if (editEntry) setFormData(editEntry); 
+  }, [editEntry, type]);
+
+  const isFormValid = formData['title']?.trim().length > 0;
 
   const addCustomField = () => {
     if (customFields.length < 3) {
@@ -181,16 +193,6 @@ export default function FormScreen({ route, navigation }) {
     setCustomFields(customFields.map(cf => cf.id === id ? { ...cf, [key]: text } : cf));
   };
 
-  // 🚀 Premium Success Animation References
-  const successScale = useRef(new Animated.Value(0.5)).current;
-  const successOpacity = useRef(new Animated.Value(0)).current;
-
-  const isFormValid = formData['title']?.trim().length > 0; 
-
-  useEffect(() => {
-    if (editEntry) setFormData(editEntry); 
-  }, [editEntry]);
-
   const handleChange = (key, text) => {
     setFormData(prev => ({ ...prev, [key]: text }));
   };
@@ -203,7 +205,6 @@ export default function FormScreen({ route, navigation }) {
       Animated.timing(successOpacity, { toValue: 1, duration: 250, useNativeDriver: true })
     ]).start();
 
-    // 🚀 FIX: Ab save hone ke baad ye direct Vault Dashboard pe jayega taaki naya data turant dikhe!
     setTimeout(() => {
       Animated.timing(successOpacity, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
          navigation.reset({ index: 0, routes: [{ name: 'MainDashboard' }] });
@@ -222,7 +223,7 @@ export default function FormScreen({ route, navigation }) {
       const existingData = await getVaultData();
       if (existingData === null) {
          setSaveState('idle'); 
-         Alert.alert('Security Alert', 'Unable to load vault securely. Save aborted to prevent data loss. Please restart the app.');
+         Alert.alert('Security Alert', 'Unable to load vault securely.');
          return;
       }
 
@@ -234,34 +235,19 @@ export default function FormScreen({ route, navigation }) {
       const password = safeFormData.password || safeFormData['Card PIN'] || formData.password || "";
       const url = safeFormData.url || formData.url || "";
       
-      let originalNotes = safeFormData.notes || formData.notes || "";
-      if (originalNotes.includes("--- Additional Details ---")) { 
-          originalNotes = originalNotes.split("--- Additional Details ---")[0].trim(); 
-      }
-      
-      let finalNotes = originalNotes;
-      const coreKeys = ['title', 'username', 'email', 'password', 'Card PIN', 'url', 'notes'];
-      let extraDetailsText = "";
-      
-      schema.forEach(field => {
-         if (!coreKeys.includes(field.key) && safeFormData[field.key]) {
-            extraDetailsText += `\n• ${field.label.replace(' *', '')}: ${safeFormData[field.key]}`;
-         }
-      });
-
-      if (extraDetailsText.length > 0) {
-         finalNotes = finalNotes + (finalNotes ? "\n\n" : "") + "--- Additional Details ---" + extraDetailsText;
+      // 🔥 THE NOTES BUG FIX: Purana appending logic hata diya. Sirf actual notes save honge.
+      let finalNotes = safeFormData.notes || formData.notes || "";
+      if (finalNotes.includes("--- Additional Details ---")) { 
+          finalNotes = finalNotes.split("--- Additional Details ---")[0].trim(); 
       }
 
       const entryId = editEntry ? String(editEntry.id) : (Date.now().toString() + Math.random().toString(36).substring(2, 7));
-      
       const validCustomFields = customFields.filter(cf => cf.label.trim() !== '' || cf.value.trim() !== '');
 
-      // 🚀 VERY IMPORTANT: Maintain old data when editing
       const newEntryData = {
         ...(editEntry || {}), 
         id: entryId, type: String(type), title, username, password, url, notes: finalNotes, date: new Date().toISOString(), 
-        customFields: validCustomFields, // 🔥 SAVE CUSTOM FIELDS HERE
+        customFields: validCustomFields,
         ...safeFormData 
       };
 
@@ -278,7 +264,7 @@ export default function FormScreen({ route, navigation }) {
         await logActivity('Vault', editEntry ? 'ENTRY_EDITED' : 'ENTRY_CREATED', `Vault entry '${title}' was securely ${editEntry ? 'updated' : 'saved'}.`, 'WORKFLOW');
         showPremiumSuccess(); 
       } else {
-        setSaveState('idle'); Alert.alert('Error', 'App failed to encrypt and save entry. Make sure you unlocked with PIN.');
+        setSaveState('idle'); Alert.alert('Error', 'App failed to encrypt and save entry.');
       }
     } catch (error) {
       console.log("Form Save Error:", error);
@@ -289,7 +275,6 @@ export default function FormScreen({ route, navigation }) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? themeColors.background : '#FFFFFF' }]}>
       
-      {/* 🚀 PREMIUM ANIMATED OVERLAY */}
       {saveState === 'success' && (
         <Modal transparent animationType="none" visible={true}>
           <BlurView intensity={50} tint="dark" style={styles.premiumSuccessOverlay}>
@@ -312,6 +297,7 @@ export default function FormScreen({ route, navigation }) {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          
           <View style={{ marginTop: 20 }}>
             {schema.map(field => (
               <SmartInput 
@@ -322,11 +308,11 @@ export default function FormScreen({ route, navigation }) {
             ))}
           </View>
 
-          {/* 🔥 CUSTOM FIELDS UI */}
+          {/* 🔥 AD-HOC CUSTOM FIELDS */}
           {customFields.map((cf, index) => (
             <View key={cf.id} style={{ marginBottom: 16, backgroundColor: isDark ? themeColors.inputBg : '#F9FAFB', padding: 16, borderRadius: 16, borderWidth: 1, borderColor: isDark ? themeColors.separator : '#E5E7EB' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
-                <Text style={{ fontSize: 12, fontWeight: '800', color: themeColors.primary, letterSpacing: 1 }}>CUSTOM FIELD {index + 1}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: themeColors.primary, letterSpacing: 1 }}>EXTRA FIELD {index + 1}</Text>
                 <TouchableOpacity onPress={() => removeCustomField(cf.id)} style={{ padding: 4, marginRight: -4, marginTop: -4 }}>
                   <Feather name="minus-circle" size={20} color="#EF4444" />
                 </TouchableOpacity>
@@ -348,25 +334,34 @@ export default function FormScreen({ route, navigation }) {
             </View>
           ))}
 
-          {/* ADD CUSTOM FIELD BUTTON (Hides after 3) */}
           {customFields.length < 3 && (
             <TouchableOpacity onPress={addCustomField} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24, paddingVertical: 8 }}>
               <Feather name="plus-circle" size={18} color={themeColors.primary} style={{ marginRight: 8 }} />
-              <Text style={{ color: themeColors.primary, fontWeight: '700', fontSize: 15 }}>Add Custom Field</Text>
+              <Text style={{ color: themeColors.primary, fontWeight: '700', fontSize: 15 }}>Add Extra Custom Field</Text>
             </TouchableOpacity>
           )}
 
+          {/* 🔥 PREMIUM REDESIGNED SAVE BUTTON */}
           <Pressable 
-            disabled={!isFormValid || saveState !== 'idle'} activeOpacity={0.8} onPress={handleSave} 
-            style={({ pressed }) => [styles.btnWrapper, pressed && { transform: [{ scale: 0.96 }] }]}
+            disabled={!isFormValid || saveState !== 'idle'} activeOpacity={0.9} onPress={handleSave} 
+            style={({ pressed }) => [styles.btnWrapper, pressed && { transform: [{ scale: 0.98 }] }]}
           >
             {isFormValid ? (
-              <LinearGradient colors={themeColors.primaryGradient} style={styles.primaryBtn}>
-                {saveState === 'loading' ? <ActivityIndicator color="#FFF" /> : <Text style={styles.primaryBtnText}>Save Securely</Text>}
+              <LinearGradient 
+                colors={themeColors.primaryGradient} 
+                start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                style={styles.primaryBtn}
+              >
+                {saveState === 'loading' ? <ActivityIndicator color="#FFF" /> : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Feather name="lock" size={18} color="#FFFFFF" style={{ marginRight: 10 }} />
+                    <Text style={styles.primaryBtnText}>Save Securely</Text>
+                  </View>
+                )}
               </LinearGradient>
             ) : (
               <View style={[styles.primaryBtn, { backgroundColor: isDark ? themeColors.inputBg : BP_COLORS.disabledBtn, elevation: 0, shadowOpacity: 0 }]}>
-                <Text style={[styles.primaryBtnText, { color: isDark ? themeColors.textLight : '#FFFFFF' }]}>Save Entry</Text>
+                <Text style={[styles.primaryBtnText, { color: isDark ? themeColors.textLight : '#FFFFFF' }]}>Save Securely</Text>
               </View>
             )}
           </Pressable>
@@ -387,11 +382,12 @@ const styles = StyleSheet.create({
   inputWrapper: { flexDirection: 'row', alignItems: 'center', height: 52, borderRadius: 14, paddingHorizontal: 14, borderWidth: 1.5 },
   input: { flex: 1, fontSize: 15, fontWeight: '500', height: '100%' },
   actionIconsRow: { flexDirection: 'row', alignItems: 'center' }, iconBtn: { padding: 4, marginLeft: 6 },
-  btnWrapper: { marginTop: 20 }, 
-  primaryBtn: { height: 52, borderRadius: 14, justifyContent: 'center', alignItems: 'center', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
-  primaryBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  
+  // 🔥 UPGRADED PREMIUM BUTTON STYLES
+  btnWrapper: { marginTop: 30, marginBottom: 20 }, 
+  primaryBtn: { height: 56, borderRadius: 18, justifyContent: 'center', alignItems: 'center', shadowColor: '#6C5CE7', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
+  primaryBtnText: { color: '#FFFFFF', fontSize: 17, fontWeight: '800', letterSpacing: 0.5 },
 
-  // 🚀 Premium Success Overlay Styles (Minimalist)
   premiumSuccessOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.6)' },
   successCard: { width: 200, padding: 24, borderRadius: 28, alignItems: 'center', shadowColor: '#000', shadowOffset: {width: 0, height: 10}, shadowOpacity: 0.15, shadowRadius: 20, elevation: 10 },
   successIconBox: { width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(16, 185, 129, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },

@@ -1335,6 +1335,11 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-ml-kit/text-recognition@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-ml-kit/text-recognition/-/text-recognition-2.0.0.tgz#b0a707f908d3e57a220cc665b6b615c8d4575bd1"
+  integrity sha512-RHefLYKndSyoDtgqHQptYQe+mftFk6/H30IQDenKX7PgMlJqoDejX+HdZ8gnP1kVNAt3iH+wyl/P6vCOkLMW9Q==
+
 "@react-native/assets-registry@0.83.6":
   version "0.83.6"
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.83.6.tgz#36c4d986aa2903ab05c29589749618cfd9d2a258"

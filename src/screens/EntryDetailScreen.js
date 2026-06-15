@@ -1,7 +1,7 @@
 // File: src/screens/EntryDetailScreen.js
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { 
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform 
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform, ActivityIndicator 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -9,9 +9,8 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 
 import { ThemeContext } from '../ThemeContext';
-import { getVaultData, saveVaultData, logActivity } from '../utils/storage';
+import { getVaultData, saveVaultData, logActivity, getCustomTypes } from '../utils/storage';
 
-// 🧠 THE SMART SCHEMA (Ye batayega kis field ka kya naam dikhana hai aur kon secure hai)
 const TYPE_SCHEMAS = {
   'Login': { username: { label: 'Username / Email' }, password: { label: 'Password', isSecure: true }, twoFactor: { label: '2FA Secret' }, url: { label: 'Website' }, notes: { label: 'Notes' } },
   'Card': { cardHolder: { label: 'Card Holder Name' }, cardNumber: { label: 'Card Number' }, 'Card PIN': { label: 'Card PIN', isSecure: true }, expiry: { label: 'Expiry Date' }, cvv: { label: 'CVV', isSecure: true }, bankName: { label: 'Issuing Bank' }, notes: { label: 'Notes' } },
@@ -21,8 +20,7 @@ const TYPE_SCHEMAS = {
   'Mail': { email: { label: 'Email Address' }, password: { label: 'Password', isSecure: true }, twoFactor: { label: '2FA Secret' }, recoveryEmail: { label: 'Recovery Email' }, backupCodes: { label: 'Backup Codes' }, notes: { label: 'Notes' } }
 };
 
-// 🧩 DYNAMIC FIELD COMPONENT
-const DetailField = ({ label, value, isSecure, isDark, themeColors }) => {
+const DetailField = ({ label, value, isSecure, isDark, themeColors, isLast }) => {
   const [revealed, setRevealed] = useState(!isSecure);
 
   const copyToClip = async () => {
@@ -36,22 +34,20 @@ const DetailField = ({ label, value, isSecure, isDark, themeColors }) => {
   if (!value || value.trim() === '') return null;
 
   return (
-    <View style={[styles.fieldContainer, { borderBottomColor: isDark ? themeColors.separator : '#F3F4F6' }]}>
-      <Text style={[styles.fieldLabel, { color: isDark ? themeColors.textLight : '#6B7280' }]}>{label}</Text>
-      
+    <View style={[styles.fieldContainer, !isLast && { borderBottomColor: isDark ? themeColors.separator : '#F3F4F6', borderBottomWidth: 1 }]}>
+      <Text style={[styles.fieldLabel, { color: isDark ? themeColors.textLight : '#8A8A8E' }]}>{label}</Text>
       <View style={styles.fieldRow}>
-        <Text style={[styles.fieldValue, { color: isDark ? themeColors.textDark : '#111827' }]}>
+        <Text style={[styles.fieldValue, { color: isDark ? themeColors.textDark : '#1C1C1E' }]}>
           {revealed ? value : '••••••••••••'}
         </Text>
-        
         <View style={styles.actionRow}>
           {isSecure && (
-            <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setRevealed(!revealed); }} style={[styles.iconBtn, { backgroundColor: isDark ? '#1E293B' : '#EAF8F5' }]}>
-              <Feather name={revealed ? "eye-off" : "eye"} size={20} color="#1ABC9C" />
+            <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setRevealed(!revealed); }} style={[styles.iconBtn, { backgroundColor: isDark ? '#2C2C2E' : '#F2F2F7' }]}>
+              <Feather name={revealed ? "eye-off" : "eye"} size={18} color={themeColors.primary} />
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={copyToClip} style={[styles.iconBtn, { backgroundColor: isDark ? '#1E293B' : '#EAF8F5' }]}>
-            <Feather name="copy" size={20} color="#1ABC9C" />
+          <TouchableOpacity onPress={copyToClip} style={[styles.iconBtn, { backgroundColor: isDark ? '#2C2C2E' : '#F2F2F7' }]}>
+            <Feather name="copy" size={18} color={themeColors.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -63,12 +59,36 @@ export default function EntryDetailScreen({ route, navigation }) {
   const { themeColors, isDark } = useContext(ThemeContext);
   const { entry } = route.params;
 
+  const [dynamicSchema, setDynamicSchema] = useState(TYPE_SCHEMAS[entry?.type] || null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSchema = async () => {
+      if (!TYPE_SCHEMAS[entry?.type]) {
+        const customTypes = await getCustomTypes();
+        const foundType = customTypes?.find(t => t.name === entry?.type);
+        if (foundType) {
+          const newSchema = {};
+          foundType.fields.forEach(f => {
+            newSchema[f.id] = { label: f.label, isSecure: false };
+          });
+          setDynamicSchema(newSchema);
+        } else {
+          setDynamicSchema({}); 
+        }
+      }
+      setLoading(false);
+    };
+    if (entry) loadSchema();
+  }, [entry]);
+
   if (!entry) {
     navigation.goBack();
     return null;
   }
 
   const handleDelete = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     Alert.alert(
       "Delete Entry",
       "Are you sure you want to delete this secure entry? This action cannot be undone.",
@@ -96,19 +116,34 @@ export default function EntryDetailScreen({ route, navigation }) {
   };
 
   const ignoredKeys = ['id', 'type', 'title', 'date', 'createdAt', 'updatedAt', 'customFields'];
-  const schema = TYPE_SCHEMAS[entry.type] || {};
-  
   const renderKeys = Object.keys(entry).filter(key => !ignoredKeys.includes(key) && entry[key] !== '');
+  const totalFields = renderKeys.length + (entry.customFields ? entry.customFields.length : 0);
+  let currentFieldIndex = 0;
+
+  // 🕒 Format Date Elegantly
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: isDark ? themeColors.background : '#F2F2F7', justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={themeColors.primary} />
+      </View>
+    );
+  }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? themeColors.background : '#F9FAFB' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? themeColors.background : '#F2F2F7' }]}>
       
-      {/* 🔝 HEADER */}
+      {/* 🔝 MINIMALIST HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.roundBtn, { backgroundColor: isDark ? themeColors.card : '#FFFFFF' }]}>
-          <Feather name="arrow-left" size={22} color={isDark ? themeColors.textDark : '#111827'} />
+          <Feather name="arrow-left" size={22} color={isDark ? themeColors.textDark : '#1C1C1E'} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: isDark ? themeColors.textDark : '#111827' }]}>Details</Text>
+        <Text style={[styles.headerTitle, { color: isDark ? themeColors.textDark : '#1C1C1E' }]}>Details</Text>
         <TouchableOpacity 
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -116,23 +151,25 @@ export default function EntryDetailScreen({ route, navigation }) {
           }} 
           style={[styles.roundBtn, { backgroundColor: isDark ? themeColors.card : '#FFFFFF' }]}
         >
-          <Feather name="edit-2" size={20} color={isDark ? themeColors.textDark : '#111827'} />
+          <Feather name="edit-2" size={20} color={isDark ? themeColors.textDark : '#1C1C1E'} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
-        {/* TITLE & TYPE */}
         <View style={styles.titleSection}>
-          <Text style={[styles.mainTitle, { color: isDark ? themeColors.textDark : '#111827' }]}>{entry.title}</Text>
-          <Text style={styles.typeBadge}>{entry.type.toUpperCase()} ACCOUNT</Text>
+          <Text style={[styles.mainTitle, { color: isDark ? themeColors.textDark : '#1C1C1E' }]}>{entry.title}</Text>
+          <View style={[styles.badgeContainer, { backgroundColor: themeColors.primary + '15' }]}>
+             <Text style={[styles.typeBadge, { color: themeColors.primary }]}>{entry.type.toUpperCase()} ACCOUNT</Text>
+          </View>
         </View>
 
-        {/* 📦 THE SMART CARD */}
-        <View style={[styles.card, { backgroundColor: isDark ? themeColors.card : '#FFFFFF', borderColor: isDark ? themeColors.separator : '#F3F4F6' }]}>
+        {/* 📦 ULTRA-SMART PREMIUM CARD */}
+        <View style={[styles.card, { backgroundColor: isDark ? themeColors.card : '#FFFFFF', borderColor: isDark ? themeColors.separator : 'transparent' }]}>
           
-          {renderKeys.map(key => {
-            const fieldDef = schema[key] || { 
+          {renderKeys.map((key) => {
+            currentFieldIndex++;
+            const fieldDef = dynamicSchema[key] || { 
               label: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()), 
               isSecure: false 
             };
@@ -144,38 +181,48 @@ export default function EntryDetailScreen({ route, navigation }) {
                 value={entry[key]} 
                 isSecure={fieldDef.isSecure} 
                 isDark={isDark} 
-                themeColors={themeColors} 
+                themeColors={themeColors}
+                isLast={currentFieldIndex === totalFields}
               />
             );
           })}
 
-          {/* 🔥 RENDER CUSTOM FIELDS */}
-          {entry.customFields && entry.customFields.map((cf, index) => (
-            <DetailField 
-              key={cf.id || `custom_${index}`} 
-              label={cf.label || `Custom Field ${index + 1}`} 
-              value={cf.value} 
-              isSecure={false} 
-              isDark={isDark} 
-              themeColors={themeColors} 
-            />
-          ))}
-
-          {/* DATE CREATED */}
-          {entry.date && (
-            <DetailField 
-              label="Date Saved" 
-              value={new Date(entry.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} 
-              isSecure={false} 
-              isDark={isDark} 
-              themeColors={themeColors} 
-            />
-          )}
-
+          {entry.customFields && entry.customFields.map((cf, index) => {
+            currentFieldIndex++;
+            return (
+              <DetailField 
+                key={cf.id || `custom_${index}`} 
+                label={cf.label || `Custom Field ${index + 1}`} 
+                value={cf.value} 
+                isSecure={false} 
+                isDark={isDark} 
+                themeColors={themeColors}
+                isLast={currentFieldIndex === totalFields} 
+              />
+            );
+          })}
         </View>
 
-        {/* 🚨 DELETE BUTTON */}
-        <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn}>
+        {/* 🛡️ PREMIUM METADATA FOOTER (Date moved here) */}
+        {entry.date && (
+          <View style={styles.metadataContainer}>
+            <Feather name="shield" size={14} color={isDark ? '#8A8A8E' : '#A1A1AA'} style={{ marginRight: 6 }} />
+            <Text style={[styles.metadataText, { color: isDark ? '#8A8A8E' : '#A1A1AA' }]}>
+              Secured • Last updated {formatDate(entry.date)}
+            </Text>
+          </View>
+        )}
+
+        {/* 🚨 PREMIUM DELETE BUTTON */}
+        <TouchableOpacity 
+          onPress={handleDelete} 
+          activeOpacity={0.7}
+          style={[styles.deleteBtn, { 
+            backgroundColor: isDark ? 'rgba(255, 59, 48, 0.1)' : '#FFF0F0', 
+            borderColor: isDark ? 'rgba(255, 59, 48, 0.2)' : '#FFE4E4' 
+          }]}
+        >
+          <Feather name="trash-2" size={18} color="#FF3B30" style={{ marginRight: 8 }} />
           <Text style={styles.deleteBtnText}>Delete Entry</Text>
         </TouchableOpacity>
 
@@ -186,25 +233,29 @@ export default function EntryDetailScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20 },
-  roundBtn: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
-  headerTitle: { fontSize: 20, fontWeight: '800' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15 },
+  roundBtn: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  headerTitle: { fontSize: 18, fontWeight: '700', letterSpacing: 0.3 },
   scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
   
-  titleSection: { alignItems: 'center', marginBottom: 24, marginTop: 10 },
-  mainTitle: { fontSize: 32, fontWeight: '900', textAlign: 'center', marginBottom: 8 },
-  typeBadge: { fontSize: 13, fontWeight: '800', color: '#6C5CE7', letterSpacing: 1.5 },
+  titleSection: { alignItems: 'center', marginBottom: 28, marginTop: 10 },
+  mainTitle: { fontSize: 30, fontWeight: '800', textAlign: 'center', marginBottom: 10, letterSpacing: -0.5 },
+  badgeContainer: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+  typeBadge: { fontSize: 12, fontWeight: '800', letterSpacing: 1.2 },
   
-  card: { borderRadius: 24, padding: 20, borderWidth: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.03, shadowRadius: 10, elevation: 1, marginBottom: 30 },
+  card: { borderRadius: 24, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 3, marginBottom: 24 },
   
-  fieldContainer: { paddingVertical: 16, borderBottomWidth: 1 },
-  fieldLabel: { fontSize: 13, fontWeight: '600', marginBottom: 8 },
+  fieldContainer: { paddingVertical: 16 },
+  fieldLabel: { fontSize: 13, fontWeight: '600', marginBottom: 8, letterSpacing: 0.3 },
   fieldRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  fieldValue: { flex: 1, fontSize: 18, fontWeight: '700', marginRight: 16 },
+  fieldValue: { flex: 1, fontSize: 17, fontWeight: '600', marginRight: 16, letterSpacing: 0.2 },
   
   actionRow: { flexDirection: 'row', alignItems: 'center' },
-  iconBtn: { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginLeft: 10 },
+  iconBtn: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
   
-  deleteBtn: { backgroundColor: '#FEF2F2', paddingVertical: 16, borderRadius: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#FEE2E2', marginBottom: 20 },
-  deleteBtnText: { color: '#EF4444', fontSize: 16, fontWeight: '800' }
+  metadataContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 30 },
+  metadataText: { fontSize: 12, fontWeight: '500', letterSpacing: 0.3 },
+
+  deleteBtn: { flexDirection: 'row', paddingVertical: 16, borderRadius: 18, justifyContent: 'center', alignItems: 'center', borderWidth: 1, marginBottom: 20 },
+  deleteBtnText: { color: '#FF3B30', fontSize: 16, fontWeight: '700', letterSpacing: 0.3 }
 });
