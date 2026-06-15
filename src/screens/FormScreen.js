@@ -8,7 +8,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import * as Clipboard from 'expo-clipboard';
 import { BlurView } from 'expo-blur';
 import CryptoJS from 'crypto-js';
 
@@ -21,7 +20,6 @@ if (!CryptoJS.lib.WordArray.random_polyfilled) {
   CryptoJS.lib.WordArray.random_polyfilled = true;
 }
 
-// 🔥 GET CUSTOM TYPES IMPORT KIYA
 import { getVaultData, saveVaultData, logActivity, getCustomTypes } from '../utils/storage';
 import { ThemeContext } from '../ThemeContext';
 
@@ -32,30 +30,30 @@ const BP_COLORS = {
 const TYPE_SCHEMAS = {
   'Login': [
     { key: 'title', label: 'Title *', placeholder: 'e.g. Google, Instagram', autoCapitalize: 'words' },
-    { key: 'username', label: 'Username/Email', placeholder: 'Enter email or username', keyboardType: 'email-address', autoCapitalize: 'none' },
+    { key: 'username', label: 'Username/Email', placeholder: 'Enter email or username' },
     { key: 'password', label: 'Password', placeholder: 'Enter password', isSecure: true, autoCapitalize: 'none' },
-    { key: 'twoFactor', label: '2FA Backup Codes', placeholder: 'Enter numerical backup codes', keyboardType: 'numeric', autoCapitalize: 'none' },
-    { key: 'url', label: 'Website (Optional)', placeholder: 'https://...', keyboardType: 'url', autoCapitalize: 'none' },
+    { key: 'twoFactor', label: '2FA Backup Codes', placeholder: 'Enter numerical backup codes', autoCapitalize: 'none' },
+    { key: 'url', label: 'Website (Optional)', placeholder: 'https://...', autoCapitalize: 'none' },
     { key: 'notes', label: 'Notes', placeholder: 'Add any extra details...', multiline: true, bigArea: true }
   ],
   'Card': [
     { key: 'title', label: 'Title *', placeholder: 'e.g. SBI Platinum Debit Card', autoCapitalize: 'words' },
     { key: 'cardHolder', label: 'Card Holder Name', placeholder: 'Name on card', autoCapitalize: 'words' },
-    { key: 'cardNumber', label: 'Card Number', placeholder: '1234 5678 9012 3456', keyboardType: 'numeric' },
-    { key: 'Card PIN', label: 'Card PIN', placeholder: '****', isSecure: true, keyboardType: 'numeric', maxLength: 6 },
-    { key: 'expiry', label: 'Expiry Date (MM/YY)', placeholder: 'MM/YY', keyboardType: 'numeric', maxLength: 5 },
-    { key: 'cvv', label: 'CVV', placeholder: '***', isSecure: true, keyboardType: 'numeric', maxLength: 4 },
+    { key: 'cardNumber', label: 'Card Number', placeholder: '1234 5678 9012 3456' },
+    { key: 'Card PIN', label: 'Card PIN', placeholder: '****', isSecure: true, maxLength: 6 },
+    { key: 'expiry', label: 'Expiry Date (MM/YY)', placeholder: 'MM/YY', maxLength: 5 },
+    { key: 'cvv', label: 'CVV', placeholder: '***', isSecure: true, maxLength: 4 },
     { key: 'bankName', label: 'Issuing Bank', placeholder: 'e.g. HDFC Bank', autoCapitalize: 'words' },
     { key: 'notes', label: 'Notes', placeholder: 'PIN or other details...', multiline: true, bigArea: true }
   ],
   'Bank': [ 
     { key: 'title', label: 'Title *', placeholder: 'e.g. HDFC Savings Account', autoCapitalize: 'words' },
     { key: 'accHolder', label: 'Account Holder Name', placeholder: 'Enter full name', autoCapitalize: 'words' },
-    { key: 'accNumber', label: 'Account Number', placeholder: 'Enter account number', keyboardType: 'numeric', isSecure: true },
+    { key: 'accNumber', label: 'Account Number', placeholder: 'Enter account number', isSecure: true },
     { key: 'ifsc', label: 'IFSC Code', placeholder: 'e.g. HDFC0001234', autoCapitalize: 'characters', maxLength: 11 }, 
     { key: 'bankName', label: 'Bank Name', placeholder: 'Enter bank name', autoCapitalize: 'words' },
     { key: 'branch', label: 'Branch Name (Optional)', placeholder: 'e.g. Ramagundam', autoCapitalize: 'words' },
-    { key: 'upi', label: 'UPI ID (Optional)', placeholder: 'name@bank', keyboardType: 'email-address', autoCapitalize: 'none' },
+    { key: 'upi', label: 'UPI ID (Optional)', placeholder: 'name@bank', autoCapitalize: 'none' },
     { key: 'notes', label: 'Notes', placeholder: 'Extra details...', multiline: true, bigArea: true }
   ],
   'Wi-Fi': [
@@ -64,42 +62,56 @@ const TYPE_SCHEMAS = {
     { key: 'password', label: 'Password', placeholder: 'Enter WiFi password', isSecure: true, autoCapitalize: 'none' },
     { key: 'security', label: 'Security Type (Optional)', placeholder: 'e.g. WPA2', autoCapitalize: 'characters' },
     { key: 'notes', label: 'Notes', placeholder: 'Router Admin panel details...', multiline: true, bigArea: true }
-  ],
-  'Notes': [ 
-    { key: 'title', label: 'Title *', placeholder: 'Write your secure note...', autoCapitalize: 'words' },
-    { key: 'notes', label: 'Secure Note', placeholder: 'Type your secret text here...', multiline: true, bigArea: true } 
-  ],
-  'Mail': [ 
-    { key: 'title', label: 'Title *', placeholder: 'e.g. Gmail Account', autoCapitalize: 'words' },
-    { key: 'email', label: 'Email Address', placeholder: 'example@gmail.com', keyboardType: 'email-address', autoCapitalize: 'none' },
-    { key: 'password', label: 'Password', placeholder: 'Enter password', isSecure: true, autoCapitalize: 'none' },
-    { key: 'twoFactor', label: '2FA Backup Codes', placeholder: 'Numerical backup codes', keyboardType: 'numeric', autoCapitalize: 'none' },
-    { key: 'recoveryEmail', label: 'Recovery Email (Optional)', placeholder: 'recovery@gmail.com', keyboardType: 'email-address', autoCapitalize: 'none' },
-    { key: 'backupCodes', label: 'Other Backup Codes', placeholder: 'Paste extra codes here', multiline: true, bigArea: true },
-    { key: 'notes', label: 'Notes', placeholder: 'Extra info...', multiline: true, bigArea: true }
   ]
+};
+
+// 🧠 UNIVERSAL SMART ENGINE
+const getSmartKeyboardType = (label) => {
+  const l = (label || '').toLowerCase();
+  if (l.includes('pin') || l.includes('cvv') || l.includes('mobile') || l.includes('number') || l.includes('phone') || l.includes('date') || l.includes('dob') || l.includes('2fa') || l.includes('code') || l.includes('account')) return 'numeric';
+  if (l.includes('email')) return 'email-address';
+  if (l.includes('website') || l.includes('url') || l.includes('link')) return 'url';
+  return 'default';
+};
+
+const formatSmartDOB = (text) => {
+  let cleaned = text.replace(/[^0-9]/g, ''); 
+  if (cleaned.length > 2) {
+    let day = cleaned.substring(0, 2);
+    let month = cleaned.substring(2, 4);
+    let year = cleaned.substring(4, 8);
+    if (parseInt(day) > 31) day = '31';
+    if (cleaned.length >= 4 && parseInt(month) > 12) month = '12';
+    cleaned = day + (month.length ? '/' + month : '') + (year.length ? '/' + year : '');
+  }
+  return cleaned;
+};
+
+const checkIsDob = (label, key = '') => {
+  const l = (label || '').toLowerCase();
+  const k = (key || '').toLowerCase();
+  return l.includes('date of birth') || l.includes('dob') || k === 'dob';
 };
 
 const SmartInput = ({ field, value, onChangeText, focusedField, setFocusedField, isDark, themeColors }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isFocused = focusedField === field.key;
-
-  const copyToClipboard = async () => {
-    if (!value) return;
-    await Clipboard.setStringAsync(value);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert("Copied", `${field.label.replace(' *', '')} copied to clipboard!`);
-    await logActivity('Security', 'SECURE_COPIED', `User securely copied ${field.label.replace(' *', '')} from a form entry.`, 'WORKFLOW');
-  };
+  
+  const isDobField = checkIsDob(field.label, field.key);
+  const kType = field.keyboardType || getSmartKeyboardType(field.label);
 
   const handleTextChange = (text) => {
-    if (field.key === 'ifsc') onChangeText(field.key, text.toUpperCase());
-    else if (field.key === 'expiry') {
+    if (isDobField) {
+      onChangeText(field.key, formatSmartDOB(text));
+    } else if (field.key === 'ifsc') {
+      onChangeText(field.key, text.toUpperCase());
+    } else if (field.key === 'expiry') {
        let cleaned = text.replace(/[^0-9]/g, '');
        if (cleaned.length >= 3) { cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4); }
        onChangeText(field.key, cleaned);
-    } 
-    else onChangeText(field.key, text);
+    } else {
+      onChangeText(field.key, text);
+    }
   };
 
   return (
@@ -113,31 +125,24 @@ const SmartInput = ({ field, value, onChangeText, focusedField, setFocusedField,
       ]}>
         <TextInput 
           style={[styles.input, { color: isDark ? themeColors.textDark : BP_COLORS.textMain }, field.multiline && { textAlignVertical: 'top', marginTop: Platform.OS === 'ios' ? 0 : -4 }]} 
-          placeholder={field.placeholder} 
+          placeholder={isDobField ? "DD/MM/YYYY" : field.placeholder} 
           placeholderTextColor="#9CA3AF" 
           value={value} 
           onChangeText={handleTextChange} 
           secureTextEntry={field.isSecure && !showPassword}
           multiline={field.multiline}
-          maxLength={field.maxLength}
-          keyboardType={field.keyboardType || 'default'}
+          maxLength={isDobField ? 10 : field.maxLength} 
+          keyboardType={kType}
           autoCapitalize={field.autoCapitalize || 'sentences'}
           onFocus={() => { Haptics.selectionAsync(); setFocusedField(field.key); }}
           onBlur={() => setFocusedField(null)}
         />
         
-        <View style={styles.actionIconsRow}>
-          {field.isSecure && (
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconBtn}>
-              <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#9CA3AF" />
-            </TouchableOpacity>
-          )}
-          {value ? (
-            <TouchableOpacity onPress={copyToClipboard} style={styles.iconBtn}>
-              <Feather name="copy" size={18} color="#9CA3AF" />
-            </TouchableOpacity>
-          ) : null}
-        </View>
+        {field.isSecure && (
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconBtn}>
+            <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#9CA3AF" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -145,18 +150,17 @@ const SmartInput = ({ field, value, onChangeText, focusedField, setFocusedField,
 
 export default function FormScreen({ route, navigation }) {
   const { themeColors, isDark } = useContext(ThemeContext);
-  const { type = 'Login', editEntry = null } = route.params || {};
+  const { type = 'Login', editEntry = null, customFields: routeCustomFields = null } = route.params || {};
 
   const [schema, setSchema] = useState(TYPE_SCHEMAS[type] || []);
   const [formData, setFormData] = useState({});
   const [focusedField, setFocusedField] = useState(null);
   const [saveState, setSaveState] = useState('idle'); 
-  const [customFields, setCustomFields] = useState(editEntry?.customFields || []);
+  const [customFields, setCustomFields] = useState(editEntry?.customFields || routeCustomFields || []);
 
   const successScale = useRef(new Animated.Value(0.5)).current;
   const successOpacity = useRef(new Animated.Value(0)).current;
 
-  // 🔥 SMART FEATURE: Dynamic Schema Setup for Custom Formats in Edit Mode
   useEffect(() => {
     const fetchCustomSchema = async () => {
       if (!TYPE_SCHEMAS[type]) {
@@ -190,7 +194,16 @@ export default function FormScreen({ route, navigation }) {
   };
 
   const updateCustomField = (id, key, text) => {
-    setCustomFields(customFields.map(cf => cf.id === id ? { ...cf, [key]: text } : cf));
+    setCustomFields(customFields.map(cf => {
+      if (cf.id === id) {
+        // Apply Smart DOB formatting instantly to custom field values
+        if (key === 'value' && checkIsDob(cf.label)) {
+          return { ...cf, [key]: formatSmartDOB(text) };
+        }
+        return { ...cf, [key]: text };
+      }
+      return cf;
+    }));
   };
 
   const handleChange = (key, text) => {
@@ -235,7 +248,6 @@ export default function FormScreen({ route, navigation }) {
       const password = safeFormData.password || safeFormData['Card PIN'] || formData.password || "";
       const url = safeFormData.url || formData.url || "";
       
-      // 🔥 THE NOTES BUG FIX: Purana appending logic hata diya. Sirf actual notes save honge.
       let finalNotes = safeFormData.notes || formData.notes || "";
       if (finalNotes.includes("--- Additional Details ---")) { 
           finalNotes = finalNotes.split("--- Additional Details ---")[0].trim(); 
@@ -308,31 +320,38 @@ export default function FormScreen({ route, navigation }) {
             ))}
           </View>
 
-          {/* 🔥 AD-HOC CUSTOM FIELDS */}
-          {customFields.map((cf, index) => (
-            <View key={cf.id} style={{ marginBottom: 16, backgroundColor: isDark ? themeColors.inputBg : '#F9FAFB', padding: 16, borderRadius: 16, borderWidth: 1, borderColor: isDark ? themeColors.separator : '#E5E7EB' }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
-                <Text style={{ fontSize: 12, fontWeight: '800', color: themeColors.primary, letterSpacing: 1 }}>EXTRA FIELD {index + 1}</Text>
-                <TouchableOpacity onPress={() => removeCustomField(cf.id)} style={{ padding: 4, marginRight: -4, marginTop: -4 }}>
-                  <Feather name="minus-circle" size={20} color="#EF4444" />
-                </TouchableOpacity>
+          {/* 🔥 CUSTOM FIELDS WITH SMART BEHAVIOR */}
+          {customFields.map((cf, index) => {
+            const isCfDob = checkIsDob(cf.label);
+            return (
+              <View key={cf.id} style={{ marginBottom: 16, backgroundColor: isDark ? themeColors.inputBg : '#F9FAFB', padding: 16, borderRadius: 16, borderWidth: 1, borderColor: isDark ? themeColors.separator : '#E5E7EB' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <Text style={{ fontSize: 12, fontWeight: '800', color: themeColors.primary, letterSpacing: 1 }}>EXTRA FIELD {index + 1}</Text>
+                  <TouchableOpacity onPress={() => removeCustomField(cf.id)} style={{ padding: 4, marginRight: -4, marginTop: -4 }}>
+                    <Feather name="minus-circle" size={20} color="#EF4444" />
+                  </TouchableOpacity>
+                </View>
+                
+                <TextInput
+                  style={[styles.inputWrapper, styles.input, { backgroundColor: isDark ? themeColors.card : '#FFFFFF', marginBottom: 10, height: 48, borderColor: isDark ? themeColors.inputBorder : '#E5E7EB', color: isDark ? themeColors.textDark : '#111827' }]}
+                  placeholder="Field Name (e.g. Website, Mobile, DOB)"
+                  placeholderTextColor="#9CA3AF"
+                  value={cf.label}
+                  onChangeText={(text) => updateCustomField(cf.id, 'label', text)}
+                />
+                
+                <TextInput
+                  style={[styles.inputWrapper, styles.input, { backgroundColor: isDark ? themeColors.card : '#FFFFFF', height: 48, borderColor: isDark ? themeColors.inputBorder : '#E5E7EB', color: isDark ? themeColors.textDark : '#111827' }]}
+                  placeholder={isCfDob ? "DD/MM/YYYY" : "Field Value"}
+                  placeholderTextColor="#9CA3AF"
+                  value={cf.value}
+                  maxLength={isCfDob ? 10 : undefined}
+                  keyboardType={getSmartKeyboardType(cf.label)}
+                  onChangeText={(text) => updateCustomField(cf.id, 'value', text)}
+                />
               </View>
-              <TextInput
-                style={[styles.inputWrapper, styles.input, { backgroundColor: isDark ? themeColors.card : '#FFFFFF', marginBottom: 10, height: 48, borderColor: isDark ? themeColors.inputBorder : '#E5E7EB', color: isDark ? themeColors.textDark : '#111827' }]}
-                placeholder="Field Name (e.g. Security Question)"
-                placeholderTextColor="#9CA3AF"
-                value={cf.label}
-                onChangeText={(text) => updateCustomField(cf.id, 'label', text)}
-              />
-              <TextInput
-                style={[styles.inputWrapper, styles.input, { backgroundColor: isDark ? themeColors.card : '#FFFFFF', height: 48, borderColor: isDark ? themeColors.inputBorder : '#E5E7EB', color: isDark ? themeColors.textDark : '#111827' }]}
-                placeholder="Field Value"
-                placeholderTextColor="#9CA3AF"
-                value={cf.value}
-                onChangeText={(text) => updateCustomField(cf.id, 'value', text)}
-              />
-            </View>
-          ))}
+            );
+          })}
 
           {customFields.length < 3 && (
             <TouchableOpacity onPress={addCustomField} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24, paddingVertical: 8 }}>
@@ -341,17 +360,12 @@ export default function FormScreen({ route, navigation }) {
             </TouchableOpacity>
           )}
 
-          {/* 🔥 PREMIUM REDESIGNED SAVE BUTTON */}
           <Pressable 
             disabled={!isFormValid || saveState !== 'idle'} activeOpacity={0.9} onPress={handleSave} 
             style={({ pressed }) => [styles.btnWrapper, pressed && { transform: [{ scale: 0.98 }] }]}
           >
             {isFormValid ? (
-              <LinearGradient 
-                colors={themeColors.primaryGradient} 
-                start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                style={styles.primaryBtn}
-              >
+              <LinearGradient colors={themeColors.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.primaryBtn}>
                 {saveState === 'loading' ? <ActivityIndicator color="#FFF" /> : (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Feather name="lock" size={18} color="#FFFFFF" style={{ marginRight: 10 }} />
@@ -381,9 +395,8 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, fontWeight: '600', marginBottom: 8, marginLeft: 4 },
   inputWrapper: { flexDirection: 'row', alignItems: 'center', height: 52, borderRadius: 14, paddingHorizontal: 14, borderWidth: 1.5 },
   input: { flex: 1, fontSize: 15, fontWeight: '500', height: '100%' },
-  actionIconsRow: { flexDirection: 'row', alignItems: 'center' }, iconBtn: { padding: 4, marginLeft: 6 },
+  iconBtn: { padding: 4, marginLeft: 6 },
   
-  // 🔥 UPGRADED PREMIUM BUTTON STYLES
   btnWrapper: { marginTop: 30, marginBottom: 20 }, 
   primaryBtn: { height: 56, borderRadius: 18, justifyContent: 'center', alignItems: 'center', shadowColor: '#6C5CE7', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
   primaryBtnText: { color: '#FFFFFF', fontSize: 17, fontWeight: '800', letterSpacing: 0.5 },

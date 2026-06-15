@@ -34,9 +34,7 @@ const ROW_HEIGHT = PHOTO_ITEM_WIDTH * 1.2 + COLUMN_GAP;
 
 const GALLERY_PHOTOS_KEY = 'SAFEGALLERY_PHOTOS';
 const COLLECTIONS_KEY = 'SAFEGALLERY_COLLECTIONS';
-const AUTO_DELETE_KEY = 'SAFEGALLERY_AUTO_DELETE'; 
 
-// 🚀 FIX: setSwipeEnabled prop add kiya gaya hai pills swiping ke liye
 export default function ScanScreen({ navigation, setSwipeEnabled }) {
   const { isDark, themeColors } = useContext(ThemeContext);
   const insets = useSafeAreaInsets();
@@ -61,6 +59,12 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
   const [smartModal, setSmartModal] = useState({ visible: false, type: null, title: '', message: '', payload: null });
   const [newColName, setNewColName] = useState('');
   
+  // 🔥 NEW SMART STATES FOR FOLDER EDIT/DELETE
+  const [showFolderActions, setShowFolderActions] = useState(false);
+  const [showRenameFolder, setShowRenameFolder] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState(null);
+  const [renameColName, setRenameColName] = useState('');
+
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0); 
   const [currentPhoto, setCurrentPhoto] = useState(null);
@@ -245,6 +249,34 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
     toggleFabMenu(); 
   };
 
+  // 🔥 THE NEW SMART RENAME FEATURE
+  const executeRenameFolder = async () => {
+    if (!renameColName.trim() || !selectedCollection) return;
+    const newTitle = renameColName.trim();
+    
+    if (collections.some(c => c.title.toLowerCase() === newTitle.toLowerCase() && c.id !== selectedCollection.id)) {
+      return showSmartToast('Name already exists', 'alert-triangle', 'error');
+    }
+
+    const updatedCollections = collections.map(c => c.id === selectedCollection.id ? { ...c, title: newTitle } : c);
+    await saveGalleryData(null, updatedCollections);
+    
+    if (activeTab === selectedCollection.title) setActiveTab(newTitle);
+    
+    setShowRenameFolder(false); setSelectedCollection(null); setRenameColName('');
+    showSmartToast('Folder renamed successfully', 'edit-2');
+  };
+
+  // 🔥 THE NEW SMART DELETE FEATURE PROMPT
+  const promptDeleteFolder = () => {
+    setShowFolderActions(false);
+    setSmartModal({
+      visible: true, type: 'delete_folder', title: 'Delete Folder',
+      message: `Are you sure you want to delete '${selectedCollection.title}'?\n\nDon't worry, your photos will NOT be deleted, they will just move back to 'All'.`,
+      payload: null
+    });
+  };
+
   const movePhotosFromGallery = async () => {
     if (isDecoyMode) return showSmartToast('Disabled in Decoy Mode', 'shield-off', 'error'); 
     toggleFabMenu(); 
@@ -391,6 +423,21 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
     const { type, payload, isBulk } = smartModal;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     
+    // 🔥 NEW SMART: EXECUTE FOLDER DELETE
+    if (type === 'delete_folder') {
+      const updatedCollections = collections.filter(c => c.id !== selectedCollection.id);
+      const updatedPhotos = photos.map(p => p.collectionId === selectedCollection.id ? { ...p, collectionId: null } : p);
+      await saveGalleryData(updatedPhotos, updatedCollections);
+      
+      if (activeTab === selectedCollection.title) setActiveTab('All');
+      await logActivity('Gallery', 'FOLDER_DELETED', `Deleted folder '${selectedCollection.title}'.`, 'INFO');
+      
+      showSmartToast('Folder deleted, photos safe', 'trash-2');
+      closeSmartModal();
+      setSelectedCollection(null);
+      return;
+    }
+
     if (type === 'delete') {
       const updatedPhotos = photos.filter(p => !payload.includes(p.id));
       await saveGalleryData(updatedPhotos, null);
@@ -480,6 +527,8 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
             </TouchableOpacity>
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
                {smartModal.type === 'delete' && <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(239, 68, 68, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}><Feather name="trash-2" size={28} color="#EF4444" /></View>}
+               {/* 🔥 FOLDER DELETE ICON */}
+               {smartModal.type === 'delete_folder' && <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(239, 68, 68, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}><Feather name="folder-minus" size={28} color="#EF4444" /></View>}
                {smartModal.type === 'move' && <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: sgAccentLight, justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}><Feather name="folder" size={28} color={sgAccent} /></View>}
                {smartModal.type === 'import_warning' && <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(52, 211, 153, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}><Feather name="shield" size={28} color="#10B981" /></View>}
                {smartModal.type === 'export' && <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(59, 130, 246, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}><Feather name="download" size={28} color="#3B82F6" /></View>}
@@ -500,8 +549,8 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
                  </TouchableOpacity>
                </ScrollView>
             )}
-            {(smartModal.type === 'delete' || smartModal.type === 'export' || smartModal.type === 'share') && (
-               <TouchableOpacity onPress={executeSmartModalAction} style={[styles.applyBtn, { backgroundColor: smartModal.type === 'delete' ? '#EF4444' : sgAccent, width: '100%', height: 56, borderRadius: 100 }]}>
+            {(smartModal.type === 'delete' || smartModal.type === 'delete_folder' || smartModal.type === 'export' || smartModal.type === 'share') && (
+               <TouchableOpacity onPress={executeSmartModalAction} style={[styles.applyBtn, { backgroundColor: smartModal.type === 'delete' || smartModal.type === 'delete_folder' ? '#EF4444' : sgAccent, width: '100%', height: 56, borderRadius: 100 }]}>
                   <Text style={[styles.applyBtnText, { fontSize: 16 }]}>{smartModal.title}</Text>
                </TouchableOpacity>
             )}
@@ -541,7 +590,6 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
               </TouchableOpacity>
             </View>
 
-            {/* 🚀 FIX: Smooth Swiping aur Premium Gaps apply kar diye */}
             <View 
               style={[styles.chipContainer, isSelectionMode && { opacity: 0.3 }]} 
               pointerEvents={isSelectionMode ? 'none' : 'auto'}
@@ -561,7 +609,23 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
                 {galleryTabs.map((item) => {
                   const isActive = activeTab === item;
                   return (
-                    <TouchableOpacity key={item} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setActiveTab(item); }} style={[styles.chip, isActive ? { backgroundColor: sgAccent } : { backgroundColor: isDark ? themeColors.inputBg : '#F1F2F6' }]}>
+                    <TouchableOpacity 
+                      key={item} 
+                      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setActiveTab(item); }} 
+                      // 🔥 NEW SMART LOGIC: Long Press triggers Rename/Delete action sheet
+                      onLongPress={() => {
+                        if (item !== 'All' && item !== 'Favorites') {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                          const col = collections.find(c => c.title === item);
+                          if (col) {
+                            setSelectedCollection(col);
+                            setRenameColName(col.title);
+                            setShowFolderActions(true);
+                          }
+                        }
+                      }}
+                      style={[styles.chip, isActive ? { backgroundColor: sgAccent } : { backgroundColor: isDark ? themeColors.inputBg : '#F1F2F6' }]}
+                    >
                       <Text style={[styles.chipText, isActive ? { color: '#FFFFFF', fontWeight: '700' } : { color: themeColors.textLight, fontWeight: '600' }]}>{item}</Text>
                     </TouchableOpacity>
                   );
@@ -632,6 +696,61 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
         </View>
       </Modal>
 
+      {/* 🔥 SMART FOLDER ACTIONS SHEET */}
+      {showFolderActions && selectedCollection && (
+        <Modal visible={true} transparent animationType="fade" onRequestClose={() => setShowFolderActions(false)}>
+          <View style={StyleSheet.absoluteFill}>
+            <BlurView intensity={25} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill}>
+              <TouchableOpacity style={styles.modalOverlayBottom} activeOpacity={1} onPress={() => setShowFolderActions(false)}>
+                <TouchableOpacity activeOpacity={1} style={[styles.bottomSheet, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                  <View style={[styles.sheetHandle, { backgroundColor: isDark ? '#334155' : '#E2E8F0' }]} />
+                  <Text style={[styles.sheetTitle, { color: isDark ? '#F8FAFC' : '#0F172A', marginBottom: 20 }]}>Folder: {selectedCollection.title}</Text>
+                  
+                  <TouchableOpacity style={[styles.sortOptionRow, { borderBottomColor: isDark ? '#334155' : 'rgba(0,0,0,0.05)' }]} onPress={() => { setShowFolderActions(false); setTimeout(() => setShowRenameFolder(true), 200); }}>
+                     <Text style={[styles.sortOptionText, { color: isDark ? '#E2E8F0' : '#475569' }]}>Rename Folder</Text>
+                     <Feather name="edit-2" size={20} color={isDark ? '#F8FAFC' : '#0F172A'} />
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={[styles.sortOptionRow, { borderBottomWidth: 0 }]} onPress={promptDeleteFolder}>
+                     <Text style={[styles.sortOptionText, { color: '#EF4444' }]}>Delete Folder</Text>
+                     <Feather name="trash-2" size={20} color="#EF4444" />
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </BlurView>
+          </View>
+        </Modal>
+      )}
+
+      {/* 🔥 SMART FOLDER RENAME MODAL */}
+      {showRenameFolder && selectedCollection && (
+        <Modal visible={true} transparent animationType="fade" onRequestClose={() => setShowRenameFolder(false)}>
+          <View style={StyleSheet.absoluteFill}>
+            <BlurView intensity={20} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill}>
+              <TouchableOpacity style={styles.modalOverlayBottom} activeOpacity={1} onPress={() => setShowRenameFolder(false)}>
+                <TouchableOpacity activeOpacity={1} style={[styles.bottomSheet, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                  <View style={[styles.sheetHandle, { backgroundColor: isDark ? '#334155' : '#E2E8F0' }]} />
+                  <Text style={[styles.sheetTitle, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>Rename Folder</Text>
+                  <View style={{ marginBottom: 30 }}>
+                    <TextInput 
+                      style={[styles.inputBox, {backgroundColor: isDark ? '#0F172A' : '#F8F9FB', color: isDark ? '#F8FAFC' : '#0F172A', borderColor: isDark ? '#334155' : '#EEF1F5', borderRadius: 100}]} 
+                      placeholder="New Folder Name" 
+                      placeholderTextColor={isDark ? '#94A3B8' : '#94A3B8'} 
+                      value={renameColName} 
+                      onChangeText={setRenameColName} 
+                      autoFocus 
+                    />
+                  </View>
+                  <TouchableOpacity style={[styles.applyBtn, { backgroundColor: sgAccent, borderRadius: 100 }]} onPress={executeRenameFolder}>
+                    <Text style={styles.applyBtnText}>Save Changes</Text>
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </BlurView>
+          </View>
+        </Modal>
+      )}
+
       {(!viewerVisible && showSortSheet) && (
         <Modal visible={true} transparent animationType="fade" onRequestClose={() => setShowSortSheet(false)}>
           <View style={StyleSheet.absoluteFill}>
@@ -640,7 +759,7 @@ export default function ScanScreen({ navigation, setSwipeEnabled }) {
                 <TouchableOpacity activeOpacity={1} style={[styles.bottomSheet, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
                   <View style={[styles.sheetHandle, { backgroundColor: isDark ? '#334155' : '#E2E8F0' }]} /><Text style={[styles.sheetTitle, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>Sort Images</Text>
                   {['newest', 'oldest', 'favorites_first'].map((option) => (
-                    <TouchableOpacity key={option} style={styles.sortOptionRow} onPress={() => { setSortType(option); setShowSortSheet(false); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}>
+                    <TouchableOpacity key={option} style={[styles.sortOptionRow, { borderBottomColor: isDark ? '#334155' : 'rgba(0,0,0,0.05)' }]} onPress={() => { setSortType(option); setShowSortSheet(false); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}>
                        <Text style={[styles.sortOptionText, { color: isDark ? '#E2E8F0' : '#475569' }]}>{option === 'newest' ? 'Newest First 🗓️' : option === 'oldest' ? 'Oldest First 🕰️' : 'Favorites First ⭐'}</Text>
                        {sortType === option && <Feather name="check" size={20} color={sgAccent} />}
                     </TouchableOpacity>
@@ -749,7 +868,7 @@ const styles = StyleSheet.create({
   inputBox: { height: 54, borderRadius: 100, paddingHorizontal: 20, fontSize: 16, fontWeight: '600', borderWidth: 1 }, 
   applyBtn: { height: 56, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }, 
   applyBtnText: { color: '#FFF', fontSize: 15, fontWeight: '800' },
-  sortOptionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0,0.05)' },
+  sortOptionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1 },
   sortOptionText: { fontSize: 16, fontWeight: '600' },
   topGradientContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: 130, zIndex: 11000 },
   viewerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 },
