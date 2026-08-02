@@ -3,39 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeLocker | Secure Your Digital Life</title>
+    <title>SafeLocker | Secure Digital Vault</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0F172A; color: #F8FAFC; }
-        .gradient-text { background: linear-gradient(to right, #6C5CE7, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #020617; /* Slate 950 */
+            color: #F8FAFC; 
+            overflow: hidden;
+        }
+        
+        /* Smooth Fade-Up Entry Animation */
+        .animate-fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center justify-center relative selection:bg-indigo-500 selection:text-white">
 
-    <div class="glass-card max-w-lg w-full rounded-3xl p-10 text-center shadow-2xl">
-        <div class="w-20 h-20 bg-slate-800 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg border border-slate-700">
-            <!-- Simple SVG Icon -->
-            <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    <!-- Subtle Ambient Background Glow -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#020617] to-[#020617] -z-10"></div>
+
+    <main class="relative z-10 flex flex-col items-center px-6 w-full max-w-md text-center">
+        
+        <!-- Minimalist Icon -->
+        <div class="animate-fade-up w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(255,255,255,0.03)] backdrop-blur-md">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
         </div>
         
-        <h1 class="text-4xl font-extrabold mb-3">Safe<span class="gradient-text">Locker</span></h1>
-        <p class="text-slate-400 text-sm mb-8 leading-relaxed">The ultimate offline vault for your passwords, cards, and secure notes. Built with military-grade local encryption.</p>
+        <!-- Clean Typography -->
+        <h1 class="animate-fade-up delay-1 text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
+            SafeLocker
+        </h1>
         
-        <div class="space-y-4">
-            <!-- 👇 NEECHE WALI LINE ME APNA LINK DAALNA HAI 👇 -->
-            <a href="https://github.com/sheikhtaj466-netizen/Safelocker-v3/releases/download/v3.0.0/Safelocker.v3_1.apk" class="block w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-6 rounded-xl transition duration-300 shadow-lg shadow-indigo-500/30">
-                Download for Android (.apk)
+        <p class="animate-fade-up delay-2 text-slate-400 text-base leading-relaxed mb-10 px-4">
+            Zero internet required. Absolute privacy. Your personal offline vault secured by local AES encryption.
+        </p>
+        
+        <!-- Premium Action Button -->
+        <div class="animate-fade-up delay-3 w-full">
+            <a href="https://drive.google.com/file/d/1Ilz52mrECTTNlMA6mjhTgn9xLkg-ACve/view?usp=drivesdk" 
+               class="group relative w-full inline-flex items-center justify-center gap-3 bg-white text-slate-950 font-semibold py-4 px-6 rounded-2xl hover:bg-slate-100 hover:scale-[1.02] transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                
+                <!-- Android Icon SVG inside button -->
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.523 15.3414C17.523 15.3414 17.5222 15.3414 17.523 15.3414ZM6.47614 15.3414C6.47614 15.3414 6.47697 15.3414 6.47614 15.3414ZM17.159 13.9167L18.7303 11.1953C18.8953 10.9095 18.797 10.5445 18.5112 10.3795C18.2253 10.2145 17.8603 10.3128 17.6953 10.5987L16.0827 13.3921C14.8624 12.8335 13.4839 12.5113 12 12.5113C10.5161 12.5113 9.13759 12.8335 7.91728 13.3921L6.30467 10.5987C6.13968 10.3128 5.77468 10.2145 5.48884 10.3795C5.203 10.5445 5.10468 10.9095 5.26967 11.1953L6.84097 13.9167C4.54228 15.228 3 17.6534 3 20.4887H21C21 17.6534 19.4577 15.228 17.159 13.9167ZM7.67139 18.2435C7.07223 18.2435 6.58661 17.7579 6.58661 17.1587C6.58661 16.5596 7.07223 16.074 7.67139 16.074C8.27055 16.074 8.75617 16.5596 8.75617 17.1587C8.75617 17.7579 8.27055 18.2435 7.67139 18.2435ZM16.3286 18.2435C15.7294 18.2435 15.2438 17.7579 15.2438 17.1587C15.2438 16.5596 15.7294 16.074 16.3286 16.074C16.9278 16.074 17.4134 16.5596 17.4134 17.1587C17.4134 17.7579 16.9278 18.2435 16.3286 18.2435Z"></path>
+                </svg>
+                Download APK
             </a>
-            <p class="text-xs text-slate-500 mt-4">Version 3.0.0 • Requires Android 8.0+</p>
+            
+            <div class="mt-5 flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                v3.0.0 Release
+            </div>
         </div>
-    </div>
 
-    <footer class="mt-12 text-center text-slate-500 text-sm">
-        <p>Designed & Developed by <span class="font-bold text-slate-300">sheikhtaj08</span></p>
+    </main>
+
+    <!-- Minimal Footer -->
+    <footer class="absolute bottom-8 w-full text-center text-slate-600 text-xs font-medium">
+        Developed by <a href="#" class="text-slate-400 hover:text-white transition">sheikhtaj08</a>
     </footer>
 
 </body>
 </html>
-
