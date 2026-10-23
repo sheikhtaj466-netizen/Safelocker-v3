@@ -61,20 +61,20 @@
 
         /* Glassmorphic Luxury Card */
         .glass-card {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.68);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.09);
         }
 
         .glass-card-hover {
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-card-hover:hover {
-            border-color: rgba(139, 92, 246, 0.35);
+            border-color: rgba(139, 92, 246, 0.38);
             transform: translateY(-2px);
-            box-shadow: 0 24px 60px rgba(108, 92, 231, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 60px rgba(108, 92, 231, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.14);
         }
 
         /* Smooth Fade-Up Entry Animation */
@@ -118,7 +118,7 @@
             left: -60%;
             width: 40%;
             height: 200%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.35), transparent);
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.38), transparent);
             transform: rotate(25deg);
             animation: shimmerSwipe 4.5s infinite;
         }
@@ -156,10 +156,10 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="relative z-10 flex flex-col items-center px-5 py-8 w-full max-w-xl mx-auto text-center">
+    <main class="relative z-10 flex flex-col items-center px-5 py-7 w-full max-w-xl mx-auto text-center">
         
         <!-- Live Security Status Pill -->
-        <div class="animate-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-7">
+        <div class="animate-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
             <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -168,7 +168,7 @@
         </div>
 
         <!-- 3D-Styled Cyber Shield Emblem -->
-        <div class="animate-fade-up delay-1 relative mb-7 animate-float">
+        <div class="animate-fade-up delay-1 relative mb-6 animate-float">
             <div class="absolute -inset-3 bg-gradient-to-tr from-indigo-500/30 to-purple-500/30 rounded-3xl blur-xl -z-10"></div>
             <div class="w-20 h-20 rounded-[26px] glass-card flex items-center justify-center relative border border-white/15">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700 flex items-center justify-center shadow-inner">
@@ -188,35 +188,91 @@
             <span class="bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-400 bg-clip-text text-transparent">Compromise.</span>
         </h1>
         
-        <p class="animate-fade-up delay-2 text-slate-400 text-sm sm:text-base leading-relaxed mb-8 max-w-md font-medium">
+        <p class="animate-fade-up delay-2 text-slate-400 text-sm sm:text-base leading-relaxed mb-7 max-w-md font-medium">
             Zero internet required. Your passwords, cards, private photos, and documents secured locally by military-grade <span class="text-slate-200 font-semibold">AES-256 SQLite</span> encryption.
         </p>
         
-        <!-- Primary Action Button Card -->
-        <div class="animate-fade-up delay-3 w-full glass-card rounded-3xl p-4 sm:p-5 mb-7">
+        <!-- Dual Download Action Hub Card -->
+        <div class="animate-fade-up delay-3 w-full glass-card rounded-3xl p-4 sm:p-5 mb-7 text-left">
+            
+            <!-- Top Channel Label -->
+            <div class="flex items-center justify-between mb-3 px-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Choose Download Server</span>
+                <span class="text-[10px] font-mono font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">v3.0.0 Official APK</span>
+            </div>
+
             <div class="flex flex-col gap-3">
-                <!-- Main Updated Google Drive Link -->
-                <a href="https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk" 
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   onclick="handleDownloadClick(event)"
-                   class="btn-shimmer group w-full inline-flex items-center justify-center gap-3 bg-white text-slate-950 font-extrabold text-base py-4 px-6 rounded-2xl hover:bg-indigo-50 hover:scale-[1.01] transition-all duration-300 active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.14)]">
+                
+                <!-- OPTION 1: GitHub Releases (Fast Direct 1-Tap Download) -->
+                <a href="https://github.com/sheikhtaj466-netizen/Safelocker-v3/releases/download/v3.0.0/Safelocker-v3.apk"
+                   download="Safelocker-v3.apk"
+                   onclick="handleDownloadClick(event, 'GITHUB')"
+                   class="btn-shimmer group w-full flex items-center justify-between bg-white text-slate-950 py-3.5 px-5 rounded-2xl hover:bg-indigo-50 hover:scale-[1.01] transition-all duration-300 active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.16)]">
                     
-                    <!-- Android Icon SVG -->
-                    <svg class="w-5 h-5 text-slate-950 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.523 15.3414C17.523 15.3414 17.5222 15.3414 17.523 15.3414ZM6.47614 15.3414C6.47614 15.3414 6.47697 15.3414 6.47614 15.3414ZM17.159 13.9167L18.7303 11.1953C18.8953 10.9095 18.797 10.5445 18.5112 10.3795C18.2253 10.2145 17.8603 10.3128 17.6953 10.5987L16.0827 13.3921C14.8624 12.8335 13.4839 12.5113 12 12.5113C10.5161 12.5113 9.13759 12.8335 7.91728 13.3921L6.30467 10.5987C6.13968 10.3128 5.77468 10.2145 5.48884 10.3795C5.203 10.5445 5.10468 10.9095 5.26967 11.1953L6.84097 13.9167C4.54228 15.228 3 17.6534 3 20.4887H21C21 17.6534 19.4577 15.228 17.159 13.9167ZM7.67139 18.2435C7.07223 18.2435 6.58661 17.7579 6.58661 17.1587C6.58661 16.5596 7.07223 16.074 7.67139 16.074C8.27055 16.074 8.75617 16.5596 8.75617 17.1587C8.75617 17.7579 8.27055 18.2435 7.67139 18.2435ZM16.3286 18.2435C15.7294 18.2435 15.2438 17.7579 15.2438 17.1587C15.2438 16.5596 15.7294 16.074 16.3286 16.074C16.9278 16.074 17.4134 16.5596 17.4134 17.1587C17.4134 17.7579 16.9278 18.2435 16.3286 18.2435Z"></path>
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-950 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                            <!-- Fast Bolt / GitHub Release Icon -->
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-left">
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-sm sm:text-base text-slate-950">Direct Download APK</span>
+                                <span class="text-[10px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-800">Fastest</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-600">GitHub Releases • Instant 1-Click Start</p>
+                        </div>
+                    </div>
+
+                    <svg class="w-5 h-5 text-slate-800 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
-                    <span>Download APK</span>
-                    <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-slate-900/10 text-slate-700">v3.0</span>
                 </a>
 
-                <!-- Instagram / In-App Browser Auto-Helper -->
-                <button onclick="openInChrome()" class="w-full py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white font-semibold text-xs transition flex items-center justify-center gap-2 active:scale-95">
-                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- OPTION 2: Google Drive Public Mirror Link -->
+                <a href="https://drive.google.com/file/d/1npVznS-VEHAvbYP5yPJa0ylULhXFCChj/view?usp=drivesdk"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   onclick="handleDownloadClick(event, 'DRIVE')"
+                   class="group w-full flex items-center justify-between bg-slate-900/90 hover:bg-slate-800/90 text-white border border-indigo-500/30 hover:border-indigo-400/60 py-3.5 px-5 rounded-2xl transition-all duration-300 active:scale-[0.98]">
+                    
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <!-- Cloud Drive SVG -->
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-left">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-sm sm:text-base text-white">Google Drive Mirror</span>
+                                <span class="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Cloud</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Public Drive Link • Alternative Server</p>
+                        </div>
+                    </div>
+
+                    <svg class="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                     </svg>
-                    <span>Opening from Instagram? Tap to Open in Chrome</span>
-                </button>
+                </a>
+
+                <!-- Instagram / In-App Browser Helper Row -->
+                <div class="pt-1 flex items-center justify-between gap-2">
+                    <button onclick="openInChrome('GITHUB')" class="flex-1 py-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-300 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5 active:scale-95">
+                        <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        <span>Instagram? Open Direct in Chrome</span>
+                    </button>
+                    <button onclick="openQrModal()" class="py-2.5 px-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-300 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5 active:scale-95">
+                        <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                        </svg>
+                        <span>QR Code</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Metadata Spec Bar -->
@@ -240,7 +296,7 @@
             </div>
         </div>
 
-        <!-- Bento Grid: SafeLocker v3.0 Highlights -->
+        <!-- Bento Grid: SafeLocker v3.0 Highlights (6 Cards) -->
         <div class="animate-fade-up delay-4 grid grid-cols-2 gap-3 w-full text-left mb-7">
             
             <!-- Feature 1 -->
@@ -283,8 +339,30 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">Security Audit Logs</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">Real-time event tracking with 1-tap encrypted PDF export.</p>
+                <h3 class="text-white font-bold text-sm mb-1">Watermarked Audit PDF</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">Auto-cleaning 60-day logs with watermarked PDF reports.</p>
+            </div>
+
+            <!-- Feature 5 (New) -->
+            <div class="glass-card glass-card-hover p-4 rounded-2xl">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/20 flex items-center justify-center mb-3 text-cyan-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-white font-bold text-sm mb-1">15+ Offline Tools Hub</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">KB Image Compressor, PDF Merge/Split, ZIP, QR & Checksum.</p>
+            </div>
+
+            <!-- Feature 6 (New) -->
+            <div class="glass-card glass-card-hover p-4 rounded-2xl">
+                <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center mb-3 text-rose-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-white font-bold text-sm mb-1">.slbackup Vault Engine</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">1-file encrypted backup & restore with Secret PIN or Email OTP.</p>
             </div>
 
         </div>
@@ -313,8 +391,8 @@
         <p class="text-[11px] text-slate-600 mt-2">© 2026 SafeLocker Project. Built independently with zero trackers.</p>
     </footer>
 
-    <!-- Share & QR Code Glassmorphic Modal -->
-    <div id="qrModal" class="fixed inset-0 z-50 hidden items-center justify-center p-5 bg-black/70 backdrop-blur-md">
+    <!-- Share & QR Code Glassmorphic Modal (With Dual Server Switcher) -->
+    <div id="qrModal" class="fixed inset-0 z-50 hidden items-center justify-center p-5 bg-black/75 backdrop-blur-md">
         <div class="glass-card w-full max-w-xs rounded-3xl p-6 text-center relative border border-white/15 animate-fade-up">
             <button onclick="closeQrModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,34 +400,54 @@
                 </svg>
             </button>
 
-            <h3 class="text-lg font-extrabold text-white mb-1">Scan to Download</h3>
-            <p class="text-xs text-slate-400 mb-5">Scan with your phone camera or copy the direct download link below.</p>
+            <h3 class="text-lg font-extrabold text-white mb-1">Scan or Share APK</h3>
+            <p class="text-xs text-slate-400 mb-4">Choose your preferred link to generate QR or copy.</p>
 
-            <!-- Dynamic QR Code Container with Updated Link -->
-            <div class="bg-white p-3.5 rounded-2xl inline-block mb-5 shadow-lg">
-                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk" alt="SafeLocker APK QR Code" class="w-40 h-40 rounded-lg" />
+            <!-- Server Switcher Tabs inside Modal -->
+            <div class="grid grid-cols-2 gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-white/[0.07] mb-4">
+                <button id="tabGithub" onclick="switchQrSource('GITHUB')" class="py-2 px-2 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white">
+                    ⚡ GitHub Direct
+                </button>
+                <button id="tabDrive" onclick="switchQrSource('DRIVE')" class="py-2 px-2 rounded-lg text-[11px] font-bold transition text-slate-400 hover:text-white">
+                    ☁️ Google Drive
+                </button>
             </div>
 
-            <button onclick="copyPageLink()" id="copyBtn" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95 flex items-center justify-center gap-2">
+            <!-- Dynamic QR Code Container -->
+            <div class="bg-white p-3.5 rounded-2xl inline-block mb-4 shadow-lg">
+                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fgithub.com%2Fsheikhtaj466-netizen%2FSafelocker-v3%2Freleases%2Fdownload%2Fv3.0.0%2FSafelocker-v3.apk" alt="SafeLocker APK QR Code" class="w-40 h-40 rounded-lg" />
+            </div>
+
+            <button onclick="copySelectedLink()" id="copyBtn" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95 flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                 </svg>
-                <span id="copyBtnText">Copy Download Link</span>
+                <span id="copyBtnText">Copy Direct APK Link</span>
             </button>
         </div>
     </div>
 
     <!-- Floating Download Toast -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 bg-slate-900/95 border border-emerald-500/30 text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 text-xs font-semibold">
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 bg-slate-900/95 border border-emerald-500/30 text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 text-xs font-semibold whitespace-nowrap">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        <span id="toastText">Opening SafeLocker v3.0 installer...</span>
+        <span id="toastText">Starting SafeLocker v3.0 download...</span>
     </div>
 
     <script>
-        const UPDATED_DRIVE_LINK = 'https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk';
+        // Official Dual Download Links
+        const GITHUB_RELEASE_LINK = 'https://github.com/sheikhtaj466-netizen/Safelocker-v3/releases/download/v3.0.0/Safelocker-v3.apk';
+        const GOOGLE_DRIVE_LINK = 'https://drive.google.com/file/d/1npVznS-VEHAvbYP5yPJa0ylULhXFCChj/view?usp=drivesdk';
+
+        let activeQrSource = 'GITHUB';
+
         const modal = document.getElementById('qrModal');
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toastText');
+        const qrImage = document.getElementById('qrImage');
+        const tabGithub = document.getElementById('tabGithub');
+        const tabDrive = document.getElementById('tabDrive');
+        const copyBtnText = document.getElementById('copyBtnText');
+
         const ua = navigator.userAgent || navigator.vendor || window.opera;
         const isInApp = /Instagram|FBAN|FBAV/i.test(ua);
 
@@ -363,6 +461,22 @@
             modal.classList.remove('flex');
         }
 
+        function switchQrSource(source) {
+            activeQrSource = source;
+            const targetUrl = source === 'GITHUB' ? GITHUB_RELEASE_LINK : GOOGLE_DRIVE_LINK;
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(targetUrl)}`;
+
+            if (source === 'GITHUB') {
+                tabGithub.className = 'py-2 px-2 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white';
+                tabDrive.className = 'py-2 px-2 rounded-lg text-[11px] font-bold transition text-slate-400 hover:text-white';
+                copyBtnText.textContent = 'Copy Direct APK Link';
+            } else {
+                tabDrive.className = 'py-2 px-2 rounded-lg text-[11px] font-bold transition bg-indigo-600 text-white';
+                tabGithub.className = 'py-2 px-2 rounded-lg text-[11px] font-bold transition text-slate-400 hover:text-white';
+                copyBtnText.textContent = 'Copy Google Drive Link';
+            }
+        }
+
         function showToast(msg) {
             toastText.textContent = msg;
             toast.classList.remove('opacity-0', 'translate-y-4');
@@ -373,32 +487,38 @@
             }, 3000);
         }
 
-        function handleDownloadClick(e) {
-            showToast('Redirecting to SafeLocker v3.0 APK...');
-            // If user clicks inside Instagram Android browser, automatically pop open Chrome so Drive doesn't fail
+        function handleDownloadClick(e, source) {
+            if (source === 'GITHUB') {
+                showToast('Downloading SafeLocker-v3.apk (Direct)...');
+            } else {
+                showToast('Opening Google Drive Public Mirror...');
+            }
+
+            // If user clicks inside Instagram Android browser, pop open Chrome so download never fails
             if (isInApp && /Android/i.test(ua)) {
                 e.preventDefault();
-                openInChrome();
+                openInChrome(source);
             }
         }
 
-        function openInChrome() {
+        function openInChrome(source = 'GITHUB') {
+            const targetUrl = source === 'DRIVE' ? GOOGLE_DRIVE_LINK : GITHUB_RELEASE_LINK;
             showToast('Opening in Chrome Browser...');
             if (/Android/i.test(ua)) {
-                const cleanUrl = UPDATED_DRIVE_LINK.replace(/^https?:\/\//, '');
+                const cleanUrl = targetUrl.replace(/^https?:\/\//, '');
                 window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
             } else {
-                window.open(UPDATED_DRIVE_LINK, '_blank');
+                window.open(targetUrl, '_blank');
             }
         }
 
-        function copyPageLink() {
-            navigator.clipboard.writeText(UPDATED_DRIVE_LINK).then(() => {
-                const btnText = document.getElementById('copyBtnText');
-                btnText.textContent = '✓ Copied to Clipboard!';
-                showToast('Download link copied securely!');
+        function copySelectedLink() {
+            const linkToCopy = activeQrSource === 'GITHUB' ? GITHUB_RELEASE_LINK : GOOGLE_DRIVE_LINK;
+            navigator.clipboard.writeText(linkToCopy).then(() => {
+                copyBtnText.textContent = '✓ Copied to Clipboard!';
+                showToast(activeQrSource === 'GITHUB' ? 'Direct APK link copied!' : 'Google Drive link copied!');
                 setTimeout(() => {
-                    btnText.textContent = 'Copy Download Link';
+                    copyBtnText.textContent = activeQrSource === 'GITHUB' ? 'Copy Direct APK Link' : 'Copy Google Drive Link';
                 }, 2000);
             });
         }
