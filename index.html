@@ -10,7 +10,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -184,7 +184,7 @@
         
         <!-- Clean Hero Typography -->
         <h1 class="animate-fade-up delay-1 text-4xl sm:text-5xl font-black tracking-tight mb-3.5 text-white leading-[1.1]">
-            Privacy Without <br class=" sm:hidden" />
+            Privacy Without <br class="sm:hidden" />
             <span class="bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-400 bg-clip-text text-transparent">Compromise.</span>
         </h1>
         
@@ -194,10 +194,13 @@
         
         <!-- Primary Action Button Card -->
         <div class="animate-fade-up delay-3 w-full glass-card rounded-3xl p-4 sm:p-5 mb-7">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <a href="https://drive.google.com/file/d/14i77UepuPN_xISldeW4Fb6ijnrrpK2Yl/view?usp=drivesdk" 
-                   onclick="triggerDownloadToast()"
-                   class="btn-shimmer group flex-1 inline-flex items-center justify-center gap-3 bg-white text-slate-950 font-extrabold text-base py-4 px-6 rounded-2xl hover:bg-indigo-50 hover:scale-[1.01] transition-all duration-300 active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.14)]">
+            <div class="flex flex-col gap-3">
+                <!-- Main Updated Google Drive Link -->
+                <a href="https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk" 
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   onclick="handleDownloadClick(event)"
+                   class="btn-shimmer group w-full inline-flex items-center justify-center gap-3 bg-white text-slate-950 font-extrabold text-base py-4 px-6 rounded-2xl hover:bg-indigo-50 hover:scale-[1.01] transition-all duration-300 active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.14)]">
                     
                     <!-- Android Icon SVG -->
                     <svg class="w-5 h-5 text-slate-950 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
@@ -206,6 +209,14 @@
                     <span>Download APK</span>
                     <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-slate-900/10 text-slate-700">v3.0</span>
                 </a>
+
+                <!-- Instagram / In-App Browser Auto-Helper -->
+                <button onclick="openInChrome()" class="w-full py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white font-semibold text-xs transition flex items-center justify-center gap-2 active:scale-95">
+                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    <span>Opening from Instagram? Tap to Open in Chrome</span>
+                </button>
             </div>
 
             <!-- Metadata Spec Bar -->
@@ -312,11 +323,11 @@
             </button>
 
             <h3 class="text-lg font-extrabold text-white mb-1">Scan to Download</h3>
-            <p class="text-xs text-slate-400 mb-5">Scan with your phone camera or copy the direct page link below.</p>
+            <p class="text-xs text-slate-400 mb-5">Scan with your phone camera or copy the direct download link below.</p>
 
-            <!-- Dynamic QR Code Container -->
+            <!-- Dynamic QR Code Container with Updated Link -->
             <div class="bg-white p-3.5 rounded-2xl inline-block mb-5 shadow-lg">
-                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://drive.google.com/file/d/14i77UepuPN_xISldeW4Fb6ijnrrpK2Yl/view?usp=drivesdk" alt="SafeLocker APK QR Code" class="w-40 h-40 rounded-lg" />
+                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk" alt="SafeLocker APK QR Code" class="w-40 h-40 rounded-lg" />
             </div>
 
             <button onclick="copyPageLink()" id="copyBtn" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95 flex items-center justify-center gap-2">
@@ -335,9 +346,12 @@
     </div>
 
     <script>
+        const UPDATED_DRIVE_LINK = 'https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk';
         const modal = document.getElementById('qrModal');
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toastText');
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const isInApp = /Instagram|FBAN|FBAV/i.test(ua);
 
         function openQrModal() {
             modal.classList.remove('hidden');
@@ -356,22 +370,33 @@
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-4');
                 toast.classList.remove('opacity-100', 'translate-y-0');
-            }, 2800);
+            }, 3000);
         }
 
-        function triggerDownloadToast() {
+        function handleDownloadClick(e) {
             showToast('Redirecting to SafeLocker v3.0 APK...');
+            // If user clicks inside Instagram Android browser, automatically pop open Chrome so Drive doesn't fail
+            if (isInApp && /Android/i.test(ua)) {
+                e.preventDefault();
+                openInChrome();
+            }
+        }
+
+        function openInChrome() {
+            showToast('Opening in Chrome Browser...');
+            if (/Android/i.test(ua)) {
+                const cleanUrl = UPDATED_DRIVE_LINK.replace(/^https?:\/\//, '');
+                window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+            } else {
+                window.open(UPDATED_DRIVE_LINK, '_blank');
+            }
         }
 
         function copyPageLink() {
-            const linkToCopy = window.location.href.startsWith('http') 
-                ? window.location.href 
-                : 'https://drive.google.com/file/d/1JM9xIMwpkGU30Ek53_X6VJhD33BbV4WZ/view?usp=drivesdk';
-            
-            navigator.clipboard.writeText(linkToCopy).then(() => {
+            navigator.clipboard.writeText(UPDATED_DRIVE_LINK).then(() => {
                 const btnText = document.getElementById('copyBtnText');
                 btnText.textContent = '✓ Copied to Clipboard!';
-                showToast('Link copied securely!');
+                showToast('Download link copied securely!');
                 setTimeout(() => {
                     btnText.textContent = 'Copy Download Link';
                 }, 2000);
