@@ -41,12 +41,14 @@
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
-        body { 
+        html, body { 
             font-family: 'Inter', sans-serif; 
             background-color: #020617; 
             color: #F8FAFC; 
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         /* Subtle Cyber Grid Background */
@@ -55,13 +57,13 @@
             background-image: 
                 linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 40%, transparent 100%);
-            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 40%, transparent 100%);
+            mask-image: radial-gradient(ellipse 85% 65% at 50% 15%, black 45%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 15%, black 45%, transparent 100%);
         }
 
         /* Glassmorphic Luxury Card */
         .glass-card {
-            background: rgba(15, 23, 42, 0.68);
+            background: rgba(15, 23, 42, 0.72);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -69,26 +71,26 @@
         }
 
         .glass-card-hover {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-card-hover:hover {
-            border-color: rgba(139, 92, 246, 0.38);
+            border-color: rgba(139, 92, 246, 0.4);
             transform: translateY(-2px);
             box-shadow: 0 24px 60px rgba(108, 92, 231, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.14);
         }
 
         /* Smooth Fade-Up Entry Animation */
         .animate-fade-up {
-            animation: fadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
-            transform: translateY(18px);
+            transform: translateY(14px);
         }
 
-        .delay-1 { animation-delay: 0.08s; }
-        .delay-2 { animation-delay: 0.16s; }
-        .delay-3 { animation-delay: 0.24s; }
-        .delay-4 { animation-delay: 0.32s; }
-        .delay-5 { animation-delay: 0.40s; }
+        .delay-1 { animation-delay: 0.06s; }
+        .delay-2 { animation-delay: 0.12s; }
+        .delay-3 { animation-delay: 0.18s; }
+        .delay-4 { animation-delay: 0.24s; }
+        .delay-5 { animation-delay: 0.30s; }
 
         @keyframes fadeUp {
             to {
@@ -97,13 +99,13 @@
             }
         }
 
-        /* Subtle Shield Float Animation */
+        /* Separate Float Animation so it never conflicts with fadeUp opacity */
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-5px); }
         }
         .animate-float {
-            animation: floatSlow 4s ease-in-out infinite;
+            animation: floatSlow 3.8s ease-in-out infinite;
         }
 
         /* Button Shimmer Effect */
@@ -116,11 +118,11 @@
             position: absolute;
             top: -50%;
             left: -60%;
-            width: 40%;
+            width: 38%;
             height: 200%;
-            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.38), transparent);
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
             transform: rotate(25deg);
-            animation: shimmerSwipe 4.5s infinite;
+            animation: shimmerSwipe 4s infinite;
         }
         @keyframes shimmerSwipe {
             0% { left: -60%; }
@@ -128,22 +130,22 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between relative selection:bg-indigo-500 selection:text-white">
+<body class="min-h-screen flex flex-col justify-start relative selection:bg-indigo-500 selection:text-white">
 
     <!-- Ambient Background Glows & Grid -->
     <div class="fixed inset-0 bg-grid-pattern pointer-events-none -z-20"></div>
-    <div class="fixed top-[-120px] left-1/2 -translate-x-1/2 w-[520px] h-[360px] bg-indigo-600/20 rounded-full blur-[130px] pointer-events-none -z-10"></div>
-    <div class="fixed bottom-[-150px] left-1/2 -translate-x-1/2 w-[420px] h-[280px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[480px] sm:w-[680px] h-[340px] bg-indigo-600/20 rounded-full blur-[130px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-[-120px] left-1/2 -translate-x-1/2 w-[380px] sm:w-[540px] h-[260px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
     <!-- Top Minimal Navbar -->
-    <header class="w-full max-w-2xl mx-auto px-6 pt-6 pb-2 flex items-center justify-between animate-fade-up">
+    <header class="w-full max-w-3xl mx-auto px-4 sm:px-6 pt-5 sm:pt-7 pb-2 flex items-center justify-between animate-fade-up">
         <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                 </svg>
             </div>
-            <span class="font-extrabold tracking-tight text-white text-base">SafeLocker</span>
+            <span class="font-extrabold tracking-tight text-white text-base sm:text-lg">SafeLocker</span>
             <span class="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">v3.0</span>
         </div>
 
@@ -151,81 +153,83 @@
             <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
             </svg>
-            Share / QR
+            <span>Share / QR</span>
         </button>
     </header>
 
     <!-- Main Content Container -->
-    <main class="relative z-10 flex flex-col items-center px-5 py-7 w-full max-w-xl mx-auto text-center">
+    <main class="relative z-10 flex-1 flex flex-col items-center px-4 sm:px-6 pt-4 sm:pt-6 pb-6 w-full max-w-3xl mx-auto text-center">
         
         <!-- Live Security Status Pill -->
-        <div class="animate-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
-            <span class="relative flex h-2 w-2">
+        <div class="animate-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-5">
+            <span class="relative flex h-2 w-2 shrink-0">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span class="text-[11px] font-bold tracking-wider uppercase text-emerald-400">Zero-Knowledge • AES-256 Offline Core</span>
+            <span class="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-emerald-400 whitespace-nowrap">Zero-Knowledge • AES-256 Offline Core</span>
         </div>
 
-        <!-- 3D-Styled Cyber Shield Emblem -->
-        <div class="animate-fade-up delay-1 relative mb-6 animate-float">
-            <div class="absolute -inset-3 bg-gradient-to-tr from-indigo-500/30 to-purple-500/30 rounded-3xl blur-xl -z-10"></div>
-            <div class="w-20 h-20 rounded-[26px] glass-card flex items-center justify-center relative border border-white/15">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700 flex items-center justify-center shadow-inner">
-                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
+        <!-- 3D-Styled Cyber Shield Emblem (Fixed Dual Wrapper so it never turns invisible!) -->
+        <div class="animate-fade-up delay-1 mb-5">
+            <div class="relative animate-float inline-block">
+                <div class="absolute -inset-3 bg-gradient-to-tr from-indigo-500/35 to-purple-500/35 rounded-3xl blur-xl -z-10"></div>
+                <div class="w-20 h-20 rounded-[26px] glass-card flex items-center justify-center relative border border-white/15">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700 flex items-center justify-center shadow-inner">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <span class="absolute -bottom-2 px-2.5 py-0.5 rounded-full bg-slate-900 border border-indigo-500/40 text-[9px] font-mono font-bold text-indigo-300 shadow whitespace-nowrap">
+                        V3 ENGINE
+                    </span>
                 </div>
-                <span class="absolute -bottom-2 px-2 py-0.5 rounded-full bg-slate-900 border border-indigo-500/40 text-[10px] font-mono font-bold text-indigo-300 shadow">
-                    V3 ENGINE
-                </span>
             </div>
         </div>
         
         <!-- Clean Hero Typography -->
-        <h1 class="animate-fade-up delay-1 text-4xl sm:text-5xl font-black tracking-tight mb-3.5 text-white leading-[1.1]">
+        <h1 class="animate-fade-up delay-1 text-3xl sm:text-5xl font-black tracking-tight mb-3 text-white leading-[1.12]">
             Privacy Without <br class="sm:hidden" />
             <span class="bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-400 bg-clip-text text-transparent">Compromise.</span>
         </h1>
         
-        <p class="animate-fade-up delay-2 text-slate-400 text-sm sm:text-base leading-relaxed mb-7 max-w-md font-medium">
+        <p class="animate-fade-up delay-2 text-slate-400 text-xs sm:text-base leading-relaxed mb-6 max-w-lg font-medium px-2">
             Zero internet required. Your passwords, cards, private photos, and documents secured locally by military-grade <span class="text-slate-200 font-semibold">AES-256 SQLite</span> encryption.
         </p>
         
         <!-- Dual Download Action Hub Card -->
-        <div class="animate-fade-up delay-3 w-full glass-card rounded-3xl p-4 sm:p-5 mb-7 text-left">
+        <div class="animate-fade-up delay-3 w-full glass-card rounded-3xl p-3.5 sm:p-5 mb-6 text-left">
             
-            <!-- Top Channel Label -->
-            <div class="flex items-center justify-between mb-3 px-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Choose Download Server</span>
-                <span class="text-[10px] font-mono font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">v3.0.0 Official APK</span>
+            <!-- Top Channel Label (Single Line on Mobile & Desktop) -->
+            <div class="flex items-center justify-between gap-2 mb-3 px-1">
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">Choose Download Server</span>
+                <span class="text-[10px] font-mono font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full whitespace-nowrap">v3.0.0 Official APK</span>
             </div>
 
-            <div class="flex flex-col gap-3">
+            <!-- Responsive Buttons Grid: Stacked on Mobile, Side-by-Side on Desktop -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
                 
                 <!-- OPTION 1: GitHub Releases (Fast Direct 1-Tap Download) -->
                 <a href="https://github.com/sheikhtaj466-netizen/Safelocker-v3/releases/download/v3.0.0/Safelocker-v3.apk"
                    download="Safelocker-v3.apk"
                    onclick="handleDownloadClick(event, 'GITHUB')"
-                   class="btn-shimmer group w-full flex items-center justify-between bg-white text-slate-950 py-3.5 px-5 rounded-2xl hover:bg-indigo-50 hover:scale-[1.01] transition-all duration-300 active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.16)]">
+                   class="btn-shimmer group w-full flex items-center justify-between gap-2 bg-white text-slate-950 py-3.5 px-3.5 sm:px-4 rounded-2xl hover:bg-indigo-50 hover:scale-[1.01] transition-all duration-300 active:scale-[0.98] shadow-[0_0_25px_rgba(255,255,255,0.14)]">
                     
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-950 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                            <!-- Fast Bolt / GitHub Release Icon -->
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-slate-950 text-white flex items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform">
                             <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
-                        <div class="text-left">
-                            <div class="flex items-center gap-2">
-                                <span class="font-extrabold text-sm sm:text-base text-slate-950">Direct Download APK</span>
-                                <span class="text-[10px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-800">Fastest</span>
+                        <div class="text-left min-w-0">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="font-extrabold text-[13.5px] sm:text-[15px] text-slate-950 whitespace-nowrap">Direct Download APK</span>
+                                <span class="text-[9px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-800 whitespace-nowrap">Fastest</span>
                             </div>
-                            <p class="text-[11px] font-medium text-slate-600">GitHub Releases • Instant 1-Click Start</p>
+                            <p class="text-[11px] font-medium text-slate-600 truncate">GitHub Releases • 1-Click Start</p>
                         </div>
                     </div>
 
-                    <svg class="w-5 h-5 text-slate-800 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 shrink-0 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
                 </a>
@@ -235,48 +239,48 @@
                    target="_blank"
                    rel="noopener noreferrer"
                    onclick="handleDownloadClick(event, 'DRIVE')"
-                   class="group w-full flex items-center justify-between bg-slate-900/90 hover:bg-slate-800/90 text-white border border-indigo-500/30 hover:border-indigo-400/60 py-3.5 px-5 rounded-2xl transition-all duration-300 active:scale-[0.98]">
+                   class="group w-full flex items-center justify-between gap-2 bg-slate-900/90 hover:bg-slate-800/90 text-white border border-indigo-500/30 hover:border-indigo-400/60 py-3.5 px-3.5 sm:px-4 rounded-2xl transition-all duration-300 active:scale-[0.98]">
                     
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <!-- Cloud Drive SVG -->
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                             <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
                             </svg>
                         </div>
-                        <div class="text-left">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-sm sm:text-base text-white">Google Drive Mirror</span>
-                                <span class="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Cloud</span>
+                        <div class="text-left min-w-0">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="font-bold text-[13.5px] sm:text-[15px] text-white whitespace-nowrap">Google Drive Mirror</span>
+                                <span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap">Cloud</span>
                             </div>
-                            <p class="text-[11px] text-slate-400">Public Drive Link • Alternative Server</p>
+                            <p class="text-[11px] text-slate-400 truncate">Public Drive • Backup Server</p>
                         </div>
                     </div>
 
-                    <svg class="w-4 h-4 text-slate-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-slate-400 shrink-0 group-hover:text-white group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                     </svg>
                 </a>
 
-                <!-- Instagram / In-App Browser Helper Row -->
-                <div class="pt-1 flex items-center justify-between gap-2">
-                    <button onclick="openInChrome('GITHUB')" class="flex-1 py-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-300 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5 active:scale-95">
-                        <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
-                        <span>Instagram? Open Direct in Chrome</span>
-                    </button>
-                    <button onclick="openQrModal()" class="py-2.5 px-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-300 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5 active:scale-95">
-                        <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-                        </svg>
-                        <span>QR Code</span>
-                    </button>
-                </div>
+            </div>
+
+            <!-- Instagram / In-App Browser Helper Row -->
+            <div class="mt-2.5 flex items-center justify-between gap-2">
+                <button onclick="openInChrome('GITHUB')" class="flex-1 py-2.5 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-300 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5 active:scale-95 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    <span>Instagram? Open in Chrome</span>
+                </button>
+                <button onclick="openQrModal()" class="py-2.5 px-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] text-slate-300 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5 active:scale-95 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                    </svg>
+                    <span>QR Code</span>
+                </button>
             </div>
 
             <!-- Metadata Spec Bar -->
-            <div class="mt-4 pt-3.5 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-400 font-medium">
+            <div class="mt-3.5 pt-3 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1.5 text-[11px] text-slate-400 font-medium">
                 <div class="flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span>Verified Safe</span>
@@ -296,81 +300,81 @@
             </div>
         </div>
 
-        <!-- Bento Grid: SafeLocker v3.0 Highlights (6 Cards) -->
-        <div class="animate-fade-up delay-4 grid grid-cols-2 gap-3 w-full text-left mb-7">
+        <!-- Bento Grid: 2 Columns on Mobile, 3 Columns on Desktop -->
+        <div class="animate-fade-up delay-4 grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5 w-full text-left mb-6">
             
             <!-- Feature 1 -->
-            <div class="glass-card glass-card-hover p-4 rounded-2xl">
-                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center mb-3 text-indigo-400">
+            <div class="glass-card glass-card-hover p-3.5 sm:p-4 rounded-2xl">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center mb-2.5 text-indigo-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">SQLite WAL Vault</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">Smart templates for Logins, Cards, Bank, IDs & custom fields.</p>
+                <h3 class="text-white font-bold text-xs sm:text-sm mb-1">SQLite WAL Vault</h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs leading-relaxed">Smart templates for Logins, Cards, Bank, IDs & custom fields.</p>
             </div>
 
             <!-- Feature 2 -->
-            <div class="glass-card glass-card-hover p-4 rounded-2xl">
-                <div class="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center mb-3 text-purple-400">
+            <div class="glass-card glass-card-hover p-3.5 sm:p-4 rounded-2xl">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center mb-2.5 text-purple-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">Biometric & Scramble</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">Anti-spy scrambled keypad, Dual-Lock & Decoy PIN mode.</p>
+                <h3 class="text-white font-bold text-xs sm:text-sm mb-1">Biometric & Scramble</h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs leading-relaxed">Anti-spy scrambled keypad, Dual-Lock & Decoy PIN mode.</p>
             </div>
 
             <!-- Feature 3 -->
-            <div class="glass-card glass-card-hover p-4 rounded-2xl">
-                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center mb-3 text-emerald-400">
+            <div class="glass-card glass-card-hover p-3.5 sm:p-4 rounded-2xl">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center mb-2.5 text-emerald-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">Encrypted Gallery</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">Lock private photos & documents with instant high-res zoom.</p>
+                <h3 class="text-white font-bold text-xs sm:text-sm mb-1">Encrypted Gallery</h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs leading-relaxed">Lock private photos & documents with instant high-res zoom.</p>
             </div>
 
             <!-- Feature 4 -->
-            <div class="glass-card glass-card-hover p-4 rounded-2xl">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center mb-3 text-amber-400">
+            <div class="glass-card glass-card-hover p-3.5 sm:p-4 rounded-2xl">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center mb-2.5 text-amber-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">Watermarked Audit PDF</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">Auto-cleaning 60-day logs with watermarked PDF reports.</p>
+                <h3 class="text-white font-bold text-xs sm:text-sm mb-1">Watermarked Audit PDF</h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs leading-relaxed">Auto-cleaning 60-day logs with watermarked PDF reports.</p>
             </div>
 
-            <!-- Feature 5 (New) -->
-            <div class="glass-card glass-card-hover p-4 rounded-2xl">
-                <div class="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/20 flex items-center justify-center mb-3 text-cyan-400">
+            <!-- Feature 5 -->
+            <div class="glass-card glass-card-hover p-3.5 sm:p-4 rounded-2xl">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/20 flex items-center justify-center mb-2.5 text-cyan-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">15+ Offline Tools Hub</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">KB Image Compressor, PDF Merge/Split, ZIP, QR & Checksum.</p>
+                <h3 class="text-white font-bold text-xs sm:text-sm mb-1">15+ Offline Tools Hub</h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs leading-relaxed">KB Image Compressor, PDF Merge/Split, ZIP, QR & Checksum.</p>
             </div>
 
-            <!-- Feature 6 (New) -->
-            <div class="glass-card glass-card-hover p-4 rounded-2xl">
-                <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center mb-3 text-rose-400">
+            <!-- Feature 6 -->
+            <div class="glass-card glass-card-hover p-3.5 sm:p-4 rounded-2xl">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center mb-2.5 text-rose-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
                     </svg>
                 </div>
-                <h3 class="text-white font-bold text-sm mb-1">.slbackup Vault Engine</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">1-file encrypted backup & restore with Secret PIN or Email OTP.</p>
+                <h3 class="text-white font-bold text-xs sm:text-sm mb-1">.slbackup Vault Engine</h3>
+                <p class="text-slate-400 text-[11px] sm:text-xs leading-relaxed">1-file encrypted backup & restore with Secret PIN or Email OTP.</p>
             </div>
 
         </div>
 
         <!-- Quick 3-Step Installation Pill -->
-        <div class="animate-fade-up delay-5 w-full glass-card rounded-2xl p-3.5 px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+        <div class="animate-fade-up delay-5 w-full glass-card rounded-2xl p-3 px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
             <span class="font-bold text-slate-300 uppercase tracking-wider text-[10px]">Quick Setup:</span>
-            <div class="flex items-center gap-2 flex-wrap justify-center">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center text-[11px]">
                 <span class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-300 font-medium">1. Download APK</span>
                 <span class="text-slate-600">→</span>
                 <span class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-300 font-medium">2. Tap Install</span>
@@ -382,7 +386,7 @@
     </main>
 
     <!-- Minimalist Luxury Footer -->
-    <footer class="w-full max-w-xl mx-auto px-6 pb-8 pt-2 text-center animate-fade-up delay-5">
+    <footer class="w-full max-w-3xl mx-auto px-6 pb-8 pt-2 text-center animate-fade-up delay-5">
         <div class="flex items-center justify-center gap-4 text-xs text-slate-500 font-medium">
             <span>Architected by <a href="https://www.instagram.com/sheikhtaj__08" target="_blank" rel="noopener noreferrer" class="text-slate-300 hover:text-indigo-400 font-semibold transition">@sheikhtaj__08</a></span>
             <span class="text-slate-700">•</span>
@@ -401,7 +405,7 @@
             </button>
 
             <h3 class="text-lg font-extrabold text-white mb-1">Scan or Share APK</h3>
-            <p class="text-xs text-slate-400 mb-4">Choose your preferred link to generate QR or copy.</p>
+            <p class="text-xs text-slate-400 mb-4">Choose your preferred server to scan or copy link.</p>
 
             <!-- Server Switcher Tabs inside Modal -->
             <div class="grid grid-cols-2 gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-white/[0.07] mb-4">
